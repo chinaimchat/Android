@@ -332,6 +332,32 @@ public class WKIMUtils {
                             }
                         }
                     }
+                    case WKCMDKeys.wk_userAvatarUpdate -> {
+                        if (cmd.paramJsonObject == null) {
+                            return;
+                        }
+                        String avatarUid = cmd.paramJsonObject.optString("uid");
+                        if (TextUtils.isEmpty(avatarUid)) {
+                            return;
+                        }
+                        AvatarView.clearCache(avatarUid, WKChannelType.PERSONAL);
+                        String personalKey = UUID.randomUUID().toString().replace("-", "");
+                        WKIM.getInstance().getChannelManager().updateAvatarCacheKey(avatarUid, WKChannelType.PERSONAL, personalKey);
+                        WKIM.getInstance().getChannelManager().fetchChannelInfo(avatarUid, WKChannelType.PERSONAL);
+                    }
+                    case WKCMDKeys.wk_groupAvatarUpdate -> {
+                        if (cmd.paramJsonObject == null) {
+                            return;
+                        }
+                        String avatarGroupNo = cmd.paramJsonObject.optString("group_no");
+                        if (TextUtils.isEmpty(avatarGroupNo)) {
+                            return;
+                        }
+                        AvatarView.clearCache(avatarGroupNo, WKChannelType.GROUP);
+                        String groupKey = UUID.randomUUID().toString().replace("-", "");
+                        WKIM.getInstance().getChannelManager().updateAvatarCacheKey(avatarGroupNo, WKChannelType.GROUP, groupKey);
+                        WKIM.getInstance().getChannelManager().fetchChannelInfo(avatarGroupNo, WKChannelType.GROUP);
+                    }
                     case WKCMDKeys.wk_sync_reminders -> MsgModel.getInstance().syncReminder();
                     case WKCMDKeys.wk_sync_conversation_extra ->
                             MsgModel.getInstance().syncCoverExtra();
