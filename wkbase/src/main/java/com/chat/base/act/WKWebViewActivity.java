@@ -184,9 +184,8 @@ public class WKWebViewActivity extends WKBaseActivity<ActWebvieiwLayoutBinding> 
         }
 
         // Some server middleware reads token from query/header/cookie.
-        // WebView does not reuse OkHttp headers, so we need to append token for QR code endpoints.
-        // e.g. /v1/qrcode/{uuid}
-        if (url.contains("/api/v1/qrcode/") || url.contains("/v1/qrcode/")) {
+        // WebView does not reuse OkHttp headers;对齐 iOS：对 API 同主机且路径含 qrcode 的链接追加 uid/token（与仅匹配 /v1/qrcode/ 子串相比更稳）。
+        if (shouldAppendWebAuthQueryForUrl(url)) {
             String token = WKConfig.getInstance().getToken();
             if (!TextUtils.isEmpty(token) && !url.contains("token=")) {
                 try {
@@ -200,6 +199,41 @@ public class WKWebViewActivity extends WKBaseActivity<ActWebvieiwLayoutBinding> 
             }
         }
         return url;
+    }
+
+    /**
+     * 与 iOS {@code attachPublicHTTPHeadersForWebViewIfNeeded} 同意图：仅对「API 主机 + qrcode 路径」补鉴权 query，避免任意外链带 token。
+     */
+    private static boolean shouldAppendWebAuthQueryForUrl(String url) {
+        if (TextUtils.isEmpty(url) || (!url.startsWith("http") && !url.startsWith("HTTP"))) {
+            return false;
+        }
+        if (url.contains("/api/v1/qrcode/") || url.contains("/v1/qrcode/")) {
+            return true;
+        }
+        if (TextUtils.isEmpty(WKApiConfig.baseUrl)) {
+            return false;
+        }
+        try {
+            Uri page = Uri.parse(url);
+            String pageHost = page.getHost();
+            if (TextUtils.isEmpty(pageHost)) {
+                return false;
+            }
+            String base = WKApiConfig.baseUrl;
+            if (!base.startsWith("http")) {
+                base = "http://" + base;
+            }
+            Uri api = Uri.parse(base);
+            String apiHost = api.getHost();
+            if (TextUtils.isEmpty(apiHost) || !apiHost.equalsIgnoreCase(pageHost)) {
+                return false;
+            }
+            String path = page.getPath();
+            return path != null && path.toLowerCase().contains("qrcode");
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")

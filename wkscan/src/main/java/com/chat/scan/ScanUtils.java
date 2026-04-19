@@ -1,6 +1,7 @@
 package com.chat.scan;
 
 import android.content.Intent;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -104,7 +105,7 @@ class ScanUtils extends WKBaseModel {
 
     private void handleResult(AppCompatActivity activity, ScanResult result) {
 
-        if (result.forward.equals("h5")) {
+        if (result.forward != null && "h5".equalsIgnoreCase(result.forward)) {
             Intent intent = new Intent(WKScanApplication.getInstance().mContext.get(), WKWebViewActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("url", String.valueOf(result.data.get("url")));
@@ -114,7 +115,13 @@ class ScanUtils extends WKBaseModel {
             String type = result.type;
             JSONObject dataJson = new JSONObject(result.data);
             if (type.equals("group")) {
-                if (dataJson.has("group_no")) {
+                String joinUrl = dataJson.has("url") ? dataJson.optString("url") : "";
+                if (!TextUtils.isEmpty(joinUrl)) {
+                    Intent intent = new Intent(activity, WKWebViewActivity.class);
+                    intent.putExtra("url", joinUrl);
+                    activity.startActivity(intent);
+                    iHandleScanResult.dismissView();
+                } else if (dataJson.has("group_no")) {
                     String group_no = dataJson.optString("group_no");
                     WKChannelMember mChannelMember = WKIM.getInstance().getChannelMembersManager().getMember(group_no, WKChannelType.GROUP, WKConfig.getInstance().getUid());
                     if (mChannelMember != null) {
@@ -126,8 +133,6 @@ class ScanUtils extends WKBaseModel {
                             WKToastUtils.getInstance().showToast(activity
                                     .getString(R.string.scan_remove_group));
                         }
-                    } else {
-                        // TODO: 2020-04-19  加入群聊
                     }
                 }
 
@@ -135,6 +140,9 @@ class ScanUtils extends WKBaseModel {
                 HashMap<String, Object> hashMap = new HashMap<>();
                 hashMap.put("type", type);
                 hashMap.put("data", dataJson);
+                if (result.forward != null) {
+                    hashMap.put("forward", result.forward);
+                }
                 List<ScanResultMenu> list = EndpointManager.getInstance().invokes(EndpointCategory.wkScan, hashMap);
                 if (WKReader.isNotEmpty(list)) {
                     for (int i = 0, size = list.size(); i < size; i++) {
