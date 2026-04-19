@@ -1,0 +1,13 @@
+<resources>
+    <string name="str_label">标签</string>
+    <string name="str_label_name">标签名字</string>
+    <string name="str_label_input_name">例如家人、朋友</string>
+    <string name="str_label_members">成员</string>
+    <string name="str_label_delete">删除标签</string>
+    <string name="str_label_create">新建</string>
+    <string name="str_label_create_title">保存为标签</string>
+    <string name="str_label_delete_tips">标签中的联系人不会被删除，是否删除标签？</string>
+    <string name="str_label_no_data">暂无标签</string>
+    <string name="str_label_no_data_tips">你可以通过给朋友添加标签来进行分类</string>
+    <string name="str_label_is_null">标签名字不能为空</string>
+</resources>

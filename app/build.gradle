@@ -1,0 +1,150 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-parcelize'
+    id 'kotlin-android'
+    id 'com.google.gms.google-services'
+}
+
+// 读取 local.properties 中的 applicationId
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+
+def appId = localProperties.getProperty('applicationId')
+if (appId == null || appId.isEmpty()) {
+    throw new GradleException("❌ 错误：请在 local.properties 中设置 applicationId=你的包名，并在MainActivity和TSApplication文件中导包设置的包名")
+}
+
+// 自动更新 google-services.json 中的 package_name
+def googleServicesFile = file('google-services.json')
+if (googleServicesFile.exists()) {
+    def jsonContent = googleServicesFile.text
+    def updatedContent = jsonContent.replaceAll(
+        /"package_name":\s*"[^"]*"/,
+        "\"package_name\": \"${appId}\""
+    )
+    if (jsonContent != updatedContent) {
+        googleServicesFile.write(updatedContent)
+        println "✅ google-services.json 的 package_name 已更新为: ${appId}"
+    }
+    // mobilesdk_app_id 必须与 Firebase 控制台里该 Android 应用一致；格式错误会导致 Invalid google_app_id
+    def gsText = googleServicesFile.text
+    def m = (gsText =~ /"mobilesdk_app_id":\s*"([^"]+)"/)
+    if (m.find()) {
+        def mobileId = m.group(1)
+        if (!mobileId.matches(/^1:\\d+:android:[0-9a-f]{12,32}$/)) {
+            logger.lifecycle("")
+            logger.lifecycle("⚠️  google-services.json 中 mobilesdk_app_id 格式异常，Firebase Analytics/FCM 可能无法初始化：")
+            logger.lifecycle("    ${mobileId}")
+            logger.lifecycle("    请到 https://console.firebase.google.com 打开项目 → 项目设置 → 你的 Android 应用")
+            logger.lifecycle("    下载官方 google-services.json 覆盖 Android/app/google-services.json（勿手改 App ID）。")
+            logger.lifecycle("")
+        }
+    }
+}
+
+android {
+//    signingConfigs {
+//        debug {
+//            storeFile file('../demo.jks')
+//            storePassword 'demo1365'
+//            keyAlias = 'demo'
+//            keyPassword 'demo1365'
+//        }
+//        release {
+//            storeFile file('../demo.jks')
+//            storePassword 'demo1365'
+//            keyAlias = 'demo'
+//            keyPassword 'demo1365'
+//        }
+//    }
+    namespace appId
+    compileSdk rootProject.ext.compileSdkVersion
+    // useNewCruncher / cruncherEnabled 已弃用，新 cruncher 始终启用，已移除
+
+    defaultConfig {
+        applicationId appId
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
+        ndk {
+            //根据需要 自行选择添加的对应cpu类型的.so库。
+            abiFilters "armeabi-v7a", "arm64-v8a"
+//            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86'
+        }
+    }
+
+    buildTypes {
+        release {
+            jniDebuggable true
+            //  zipAlignEnabled true   //Zipalign优化
+            minifyEnabled true  // 是否混淆
+            shrinkResources true  // 是否去除无效的资源文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+           // signingConfig signingConfigs.release
+        }
+        debug {
+//            jniDebuggable true
+//            zipAlignEnabled true   //Zipalign优化
+//            minifyEnabled true  // 是否混淆
+//            shrinkResources true  // 是否去除无效的资源文件
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+           // signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+        dataBinding true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.3.2'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-splashscreen:1.2.0'
+    api project(':wkbase')
+    implementation 'com.vanniktech:android-image-cropper:4.6.0'
+    implementation project(path: ':wkuikit')
+    implementation project(path: ':wklogin')
+    implementation project(path: ':wkscan')
+    implementation project(path: ':wkpush')
+    implementation project(path: ':wkgroupmanage')
+    // implementation project(path: ':wkmoments') // 暂时禁用，保留模块代码
+    implementation project(path: ':wkfavorite')
+    implementation project(path: ':wkadvanced')
+    implementation project(path: ':wkfile')
+    implementation project(path: ':wksecurity')
+    implementation project(path: ':wksticker')
+    implementation project(path: ':wkvideo')
+    implementation project(path: ':wkwallet')
+    implementation project(path: ':wkcustomerservice')
+    implementation project(path: ':wkrtc')
+    implementation project(path: ':wkpinnedmessage')
+    implementation project(path: ':wkimageeditor')
+    implementation project(path: ':wkricheditor')
+    // implementation project(path: ':wklabel') // 暂时禁用，保留模块代码
+}

@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".RecordingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PlayVideoActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.chat.video.SearchChatVideoActivity"
+            android:screenOrientation="portrait" />
+
+    </application>
+</manifest>

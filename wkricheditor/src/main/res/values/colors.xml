@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="toolBarNormal">#676a6f</color>
+    <color name="image_color_primary">#FFFFFF</color>
+    <color name="image_color_accent">#E32528</color>
+
+    <color name="image_color_white">#FFFFFF</color>
+    <color name="image_color_black">#313131</color>
+    <color name="image_color_red">#FF5151</color>
+    <color name="image_color_green">#4EBF65</color>
+    <color name="image_color_yellow">#F9BF38</color>
+    <color name="image_color_blue">#0078FF</color>
+    <color name="image_color_purple">#6D65F6</color>
+
+    <color name="rich_editor_quote_bg_color">#fff3f3f3</color>
+    <color name="rich_editor_quote_stripe_color">#ff717171</color>
+</resources>

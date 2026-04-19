@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Wallet.Material" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/wallet_page_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorBackground">@color/wallet_page_bg</item>
+    </style>
+
+    <style name="Theme.Wallet.BuyUsdt" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">@color/buy_usdt_appbar_bg</item>
+        <item name="android:navigationBarColor">@color/buy_usdt_page_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorBackground">@color/buy_usdt_page_bg</item>
+        <item name="colorPrimary">@color/buy_usdt_primary</item>
+        <item name="colorOnPrimary">@android:color/black</item>
+    </style>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 支付宝品牌色简化图标（蓝底白形），无远程 icon 时在列表中使用 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#1677FF"
+        android:pathData="M12,12m-11,0a11,11 0 1,1 22,0a11,11 0 1,1 -22,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M11,6h2v4.2h4.5v2H13V18h-2v-5.8H6.5v-2H11z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M7.5,10.5h9v1.8h-9z" />
+</vector>

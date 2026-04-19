@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FrameLayout 仅用于叠悬浮客服按钮；主体仍为 LinearLayout+Toolbar+Scroll，避免 Coordinator 与侧滑容器叠加问题 -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/buy_usdt_page_bg"
+        android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/buyUsdtToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/buy_usdt_appbar_bg"
+        app:navigationIcon="@mipmap/ic_ab_back"
+        app:title="@string/buy_usdt_title"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.Wallet.BuyUsdt.ToolbarTitle"
+        app:titleTextColor="@color/buy_usdt_text_primary" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="@dimen/buy_usdt_scroll_bottom_pad">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/buy_usdt_page_pad_h"
+            android:paddingTop="@dimen/buy_usdt_page_pad_top">
+
+            <!-- 充值方式 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:id="@+id/buyUsdtMethodRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/buy_usdt_method_pad_h"
+                    android:paddingVertical="@dimen/buy_usdt_method_pad_v">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/buy_usdt_method"
+                        android:textColor="@color/buy_usdt_text_primary"
+                        android:textSize="14sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/buyUsdtMethodIcon"
+                        android:layout_width="@dimen/buy_usdt_icon_pay"
+                        android:layout_height="@dimen/buy_usdt_icon_pay"
+                        android:contentDescription="@null"
+                        tools:src="@drawable/ic_recharge_pay_alipay" />
+
+                    <TextView
+                        android:id="@+id/buyUsdtMethodNameTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:textColor="@color/buy_usdt_text_primary"
+                        android:textSize="14sp"
+                        tools:text="支付宝" />
+
+                    <ImageView
+                        android:id="@+id/buyUsdtMethodChevron"
+                        android:layout_width="@dimen/buy_usdt_chevron"
+                        android:layout_height="@dimen/buy_usdt_chevron"
+                        android:layout_marginStart="4dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_recharge_chevron_right"
+                        app:tint="@color/buy_usdt_text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 金额 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/buy_usdt_card_margin_top"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/buy_usdt_card_pad_h"
+                    android:paddingTop="@dimen/buy_usdt_amount_card_inner_top"
+                    android:paddingBottom="@dimen/buy_usdt_amount_card_inner_bottom">
+
+                    <LinearLayout
+                        android:id="@+id/buyUsdtAmountGrid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥300"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥400"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥500"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥600"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥700"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥800"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥900"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥1000"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/buy_usdt_grid_margin"
+                                android:layout_weight="1"
+                                android:background="@drawable/buy_usdt_cell_bg_selector"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:minHeight="@dimen/buy_usdt_grid_cell_min_h"
+                                android:text="¥2000"
+                                android:textColor="@color/buy_usdt_text_primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/buy_usdt_input_margin_top"
+                        android:hint="@string/buy_usdt_custom_label"
+                        app:boxStrokeColor="@color/buy_usdt_primary"
+                        app:boxStrokeWidth="1dp"
+                        app:boxStrokeWidthFocused="1dp"
+                        app:hintTextColor="@color/buy_usdt_text_secondary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/buyUsdtCustomAmountEt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:importantForAutofill="no"
+                            android:includeFontPadding="false"
+                            android:inputType="numberDecimal"
+                            android:letterSpacing="0"
+                            android:minHeight="@dimen/buy_usdt_input_min_h"
+                            android:paddingTop="@dimen/buy_usdt_input_pad_v"
+                            android:paddingBottom="@dimen/buy_usdt_input_pad_v"
+                            android:textColor="@color/buy_usdt_text_primary"
+                            android:textColorHint="@color/buy_usdt_hint"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/buyUsdtAmountRangeTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/buy_usdt_text_secondary"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        tools:text="单笔最低 100，最高 50000"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/buyUsdtEstimateTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:lineSpacingExtra="0dp"
+                        android:textColor="@color/buy_usdt_text_secondary"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        tools:text="预计到账约 12.02 USDT（仅供参考，以审核结果为准）"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/buyUsdtCurrentRateTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:lineSpacingExtra="0dp"
+                        android:textColor="@color/buy_usdt_text_secondary"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        tools:text="当前汇率：约 6.93 元/USDT"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buyUsdtConfirmBtn"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/buy_usdt_btn_margin_top"
+                        android:letterSpacing="0"
+                        android:minHeight="@dimen/buy_usdt_btn_min_h"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        android:text="@string/buy_usdt_confirm"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        app:backgroundTint="@color/buy_usdt_confirm_btn_tint"
+                        app:cornerRadius="@dimen/buy_usdt_btn_corner" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- FAQ -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/buy_usdt_card_margin_top"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/buy_usdt_card_pad_h"
+                    android:paddingVertical="@dimen/buy_usdt_rate_faq_pad_v">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/buy_usdt_faq_title"
+                        android:textColor="@color/buy_usdt_text_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/buyUsdtFaqBodyTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:lineSpacingExtra="0dp"
+                        android:textColor="@color/buy_usdt_text_secondary"
+                        android:textSize="12sp"
+                        tools:text="@string/buy_usdt_faq_body" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/buyUsdtContactCsBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/buy_usdt_cs_fab_margin_bottom"
+        android:clickable="true"
+        android:contentDescription="@string/buy_usdt_contact_cs"
+        android:focusable="true"
+        app:cardBackgroundColor="@color/buy_usdt_cs_fab_glass"
+        app:cardCornerRadius="@dimen/buy_usdt_cs_fab_radius"
+        app:cardElevation="@dimen/buy_usdt_cs_fab_elevation"
+        app:rippleColor="@color/buy_usdt_cs_fab_ripple"
+        app:strokeColor="@color/buy_usdt_cs_fab_glass_stroke"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:letterSpacing="0"
+            android:paddingHorizontal="@dimen/buy_usdt_cs_fab_pad_h"
+            android:paddingVertical="@dimen/buy_usdt_cs_fab_pad_v"
+            android:text="@string/buy_usdt_contact_cs"
+            android:textColor="@color/buy_usdt_cs_fab_text"
+            android:textSize="11sp" />
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

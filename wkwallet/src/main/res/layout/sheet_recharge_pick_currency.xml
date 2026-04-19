@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/recharge_sheet_page_bg"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:id="@+id/pickCurrencyTitleTv"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/recharge_sheet_bar_bg"
+        android:gravity="center"
+        android:text="@string/recharge_sheet_pick_currency_title"
+        android:textColor="@color/recharge_sheet_title"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pickCurrencyRv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:nestedScrollingEnabled="true"
+        android:overScrollMode="never"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp"
+        tools:listitem="@layout/item_recharge_pick_currency" />
+</LinearLayout>

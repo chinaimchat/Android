@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/view_bg_efefef"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <org.webrtc.SurfaceViewRenderer
+        android:id="@+id/surfaceView"
+        android:layout_width="80dp"
+        android:layout_height="180dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/timeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/view_bg_1affffff"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/floatingCallIv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/icon_floating_call" />
+
+        <TextView
+            android:id="@+id/timeTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:textColor="#1296db"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</LinearLayout>

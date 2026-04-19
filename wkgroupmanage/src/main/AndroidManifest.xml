@@ -1,0 +1,24 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".ui.GroupManageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ChooseNormalMembersActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
+            android:name=".ui.GroupBlacklistActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ForbiddenWitchGroupMemberActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.OutGroupMembersActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.chat.groupmanage.ui.GroupHeaderActivity"
+            android:screenOrientation="portrait" />
+    </application>
+</manifest>

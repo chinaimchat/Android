@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+
+        <activity
+            android:name=".ui.SecurityPrivacyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.InputDestroyAccountCodeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.ChatPwdActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.LockScreenPwdActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.InputLockScreenPwdActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.DestroyAccountActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.device.DeviceManageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.CheckLockScreenPwdActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.DisconnectScreenSaverActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.BlackListActivity"
+            android:screenOrientation="portrait" />
+    </application>
+
+</manifest>

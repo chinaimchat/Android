@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 聊天气泡：QQ 风未拆红包卡片（底层轻阴影 + 主体面 + 细描边） -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:left="1dp"
+        android:top="2dp"
+        android:right="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/wallet_rp_qq_card_shadow" />
+            <corners android:radius="@dimen/wallet_rp_chat_card_radius" />
+        </shape>
+    </item>
+    <item
+        android:bottom="2dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/wallet_rp_chat_card_radius" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/wallet_rp_qq_card_stroke" />
+            <gradient
+                android:angle="135"
+                android:centerColor="@color/wallet_rp_qq_mid"
+                android:endColor="@color/wallet_rp_qq_end"
+                android:startColor="@color/wallet_rp_qq_start"
+                android:type="linear" />
+        </shape>
+    </item>
+</layer-list>

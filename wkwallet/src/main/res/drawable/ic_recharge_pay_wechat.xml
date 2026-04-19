@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 微信品牌色简化图标（绿底双气泡），无远程 icon 时在列表中使用 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#07C160"
+        android:pathData="M12,12m-11,0a11,11 0 1,1 22,0a11,11 0 1,1 -22,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M5.2,8.2h6.3c0.55,0 1,0.45 1,1v3.1c0,0.55 -0.45,1 -1,1H9.1L7.6,15.1V14h-2.4c-0.55,0 -1,-0.45 -1,-1V9.2c0,-0.55 0.45,-1 1,-1z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10.8,10.5h7c0.55,0 1,0.45 1,1v2.7c0,0.55 -0.45,1 -1,1h-2.6l-1.4,1.6v-1.6h-2c-0.55,0 -1,-0.45 -1,-1v-2.7c0,-0.55 0.45,-1 1,-1z" />
+</vector>

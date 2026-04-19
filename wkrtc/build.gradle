@@ -1,0 +1,80 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
+apply plugin: 'maven-publish'
+
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
+                groupId = 'com.xinbida.rtc'
+                artifactId = 'wkrtc'
+                version = '1.0.0'
+            }
+        }
+        repositories {
+            maven {
+                url = uri('../repository')
+            }
+        }
+    }
+}
+android {
+    compileSdk rootProject.ext.compileSdkVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        ndk {
+            //根据需要 自行选择添加的对应cpu类型的.so库。
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            ndk {
+                //根据需要 自行选择添加的对应cpu类型的.so库。
+                abiFilters "armeabi-v7a", "arm64-v8a"
+            }
+            zipAlignEnabled true
+            minifyEnabled true
+            //shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    namespace 'com.chat.rtc'
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+}
+
+dependencies {
+    api project(':wkbase')
+//    implementation project(path: ':MyLibs:wkrtc')
+    implementation('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
+    api files('libs/libwebrtc.jar')
+//    api files('src/jniLibs/libwebrtc.jar')
+    compileOnly('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
+    implementation 'com.github.yhaolpz:FloatWindow:1.0.9'
+//    implementation 'com.xinbida.rtc:WKRTC:1.0.1'
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- QQ 风：金色徽章 + 浅色描边 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <size
+                android:width="76dp"
+                android:height="76dp" />
+            <stroke
+                android:width="3dp"
+                android:color="@color/wallet_rp_qq_btn_ring" />
+            <gradient
+                android:angle="90"
+                android:endColor="@color/wallet_rp_qq_btn_gold_end"
+                android:startColor="@color/wallet_rp_qq_btn_gold_start"
+                android:type="linear" />
+        </shape>
+    </item>
+</layer-list>

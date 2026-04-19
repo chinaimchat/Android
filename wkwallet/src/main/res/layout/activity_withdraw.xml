@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/buy_usdt_page_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/withdrawToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/buy_usdt_appbar_bg"
+        app:navigationIcon="@mipmap/ic_ab_back"
+        app:title="@string/wallet_withdraw_coin_title"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.Wallet.BuyUsdt.ToolbarTitle"
+        app:titleTextColor="@color/buy_usdt_text_primary" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="80dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/buy_usdt_page_pad_h"
+            android:paddingTop="@dimen/buy_usdt_page_pad_top">
+
+            <!-- 币种 / 网络 -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:id="@+id/withdrawChainRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/buy_usdt_method_pad_h"
+                    android:paddingVertical="@dimen/buy_usdt_method_pad_v">
+
+                    <ImageView
+                        android:id="@+id/withdrawChainIcon"
+                        android:layout_width="@dimen/buy_usdt_icon_pay"
+                        android:layout_height="@dimen/buy_usdt_icon_pay"
+                        android:contentDescription="@null"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_withdraw_usdt_token" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/withdrawChainNameTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/buy_usdt_primary"
+                        android:textSize="14sp"
+                        tools:text="USDT-TRC20" />
+
+                    <ImageView
+                        android:layout_width="@dimen/buy_usdt_chevron"
+                        android:layout_height="@dimen/buy_usdt_chevron"
+                        android:layout_marginStart="4dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_recharge_chevron_right"
+                        app:tint="@color/buy_usdt_text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/wallet_withdraw_address_label"
+                android:textColor="@color/buy_usdt_text_secondary"
+                android:textSize="13sp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/buy_usdt_card_pad_h"
+                    android:paddingVertical="10dp">
+
+                    <EditText
+                        android:id="@+id/addressEt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="@string/wallet_withdraw_address_hint"
+                        android:inputType="textNoSuggestions"
+                        android:maxLines="3"
+                        android:textColor="@color/buy_usdt_text_primary"
+                        android:textColorHint="@color/buy_usdt_hint"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/pasteTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:text="@string/wallet_withdraw_paste"
+                        android:textColor="@color/buy_usdt_primary"
+                        android:textSize="14sp" />
+
+                    <ImageButton
+                        android:id="@+id/scanAddressBtn"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/wallet_withdraw_scan_address"
+                        android:padding="8dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_wallet_scan_orange"
+                        app:tint="@color/buy_usdt_primary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/wallet_withdraw_amount_label"
+                android:textColor="@color/buy_usdt_text_secondary"
+                android:textSize="13sp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/buy_usdt_card_pad_h"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/amountEt"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:hint="@string/wallet_withdraw_amount_input_hint"
+                            android:inputType="numberDecimal"
+                            android:textColor="@color/buy_usdt_text_primary"
+                            android:textColorHint="@color/buy_usdt_hint"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/withdrawAllTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:text="@string/wallet_withdraw_all_short"
+                            android:textColor="@color/buy_usdt_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/wallet_withdraw_available_label"
+                            android:textColor="@color/buy_usdt_text_secondary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/balanceTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/buy_usdt_text_secondary"
+                            android:textSize="13sp"
+                            tools:text="0.000000 USDT" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/buy_usdt_card_margin_top"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/buy_usdt_card_pad_h"
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/wallet_withdraw_service_fee"
+                            android:textColor="@color/buy_usdt_text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/feeHelpTv"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/wallet_withdraw_service_fee_help"
+                            android:gravity="center"
+                            android:text="?"
+                            android:textColor="@color/buy_usdt_text_secondary"
+                            android:textSize="13sp" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/serviceFeeTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/buy_usdt_text_primary"
+                            android:textSize="14sp"
+                            tools:text="2 USDT" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/buy_usdt_divider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/wallet_withdraw_arrival_amount"
+                            android:textColor="@color/buy_usdt_text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/arrivalTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/buy_usdt_text_primary"
+                            android:textSize="14sp"
+                            tools:text="0.00 USDT" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/withdrawConfirmBtn"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/buy_usdt_page_pad_h"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:enabled="false"
+        android:minHeight="@dimen/buy_usdt_btn_min_h"
+        android:text="@string/wallet_confirm_withdraw_coin"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:backgroundTint="@color/buy_usdt_confirm_btn_tint"
+        app:cornerRadius="@dimen/buy_usdt_btn_corner" />
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/withdrawContactCsBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="88dp"
+        android:clickable="true"
+        android:contentDescription="@string/buy_usdt_contact_cs"
+        android:focusable="true"
+        app:cardBackgroundColor="@color/buy_usdt_cs_fab_glass"
+        app:cardCornerRadius="@dimen/buy_usdt_cs_fab_radius"
+        app:cardElevation="@dimen/buy_usdt_cs_fab_elevation"
+        app:rippleColor="@color/buy_usdt_cs_fab_ripple"
+        app:strokeColor="@color/buy_usdt_cs_fab_glass_stroke"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:letterSpacing="0"
+            android:paddingHorizontal="@dimen/buy_usdt_cs_fab_pad_h"
+            android:paddingVertical="@dimen/buy_usdt_cs_fab_pad_v"
+            android:text="@string/buy_usdt_contact_cs"
+            android:textColor="@color/buy_usdt_cs_fab_text"
+            android:textSize="11sp" />
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

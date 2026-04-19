@@ -1,0 +1,47 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true">
+        <activity
+            android:name=".ui.LoginAuthActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ChooseAreaCodeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".ui.WKLoginActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.WKRegisterActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.WKWebLoginConfirmActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.PerfectUserInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.InputLoginAuthVerificationCodeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.WKResetLoginPwdActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.PCLoginViewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.WKWebLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.chat.login.ui.ThirdLoginActivity"
+            android:screenOrientation="portrait" />
+    </application>
+</manifest>

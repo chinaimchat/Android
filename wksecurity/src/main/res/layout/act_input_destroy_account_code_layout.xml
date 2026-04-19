@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/homeColor"
+    android:orientation="vertical">
+
+    <include layout="@layout/wk_title_bar_layout" />
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/layoutColor">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/codeEt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:hint="@string/hint_verfi"
+            android:inputType="numberSigned"
+            android:padding="10dp"
+            android:textColor="@color/colorDark"
+            android:textColorHint="@color/color999"
+            android:textSize="@dimen/font_size_16" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/getVCodeBtn"
+            style="@style/buttonNormal"
+            android:layout_width="wrap_content"
+            android:alpha="0.2"
+            android:enabled="false"
+            android:insetLeft="5dp"
+            android:insetTop="8dp"
+            android:insetRight="5dp"
+            android:insetBottom="8dp"
+            android:text="@string/get_verf_code"
+            android:textSize="@dimen/font_size_14" />
+    </LinearLayout>
+</LinearLayout>

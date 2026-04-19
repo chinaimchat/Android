@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 充值页紧凑布局，适配常见手机屏宽 -->
+    <dimen name="recharge_page_pad_h">12dp</dimen>
+    <dimen name="recharge_page_pad_top">6dp</dimen>
+    <dimen name="recharge_page_pad_bottom">12dp</dimen>
+    <dimen name="recharge_section_title_margin_bottom">6dp</dimen>
+    <!-- U 币整块底部留白（与下方区块拉开） -->
+    <dimen name="recharge_u_block_bottom_pad">16dp</dimen>
+    <!-- U 币与微信/支付宝之间的总视觉间距 ≈ bottom_pad + block_gap -->
+    <dimen name="recharge_block_gap">32dp</dimen>
+    <dimen name="recharge_card_pad_h">14dp</dimen>
+    <dimen name="recharge_card_pad_v">14dp</dimen>
+    <dimen name="recharge_method_pad_h">14dp</dimen>
+    <dimen name="recharge_method_pad_v">12dp</dimen>
+    <dimen name="recharge_amount_row_margin_top">8dp</dimen>
+    <dimen name="recharge_divider_margin_top">10dp</dimen>
+    <dimen name="recharge_btn_height">46dp</dimen>
+    <dimen name="recharge_btn_margin_h">16dp</dimen>
+    <dimen name="recharge_btn_margin_bottom">16dp</dimen>
+    <dimen name="recharge_btn_margin_top">6dp</dimen>
+    <dimen name="recharge_empty_pad_top">28dp</dimen>
+    <dimen name="recharge_empty_pad_bottom">20dp</dimen>
+    <!-- 金额输入区：原 40sp/30sp 在小屏显过大 -->
+    <dimen name="recharge_amount_input_text">28sp</dimen>
+    <dimen name="recharge_amount_symbol_text">22sp</dimen>
+    <dimen name="recharge_method_label_text">14sp</dimen>
+    <dimen name="recharge_method_value_text">15sp</dimen>
+</resources>

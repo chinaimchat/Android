@@ -1,0 +1,5 @@
+<resources>
+    <string name="start">请输入内容…</string>
+    <string name="choose_member">选择群成员</string>
+    <string name="rich_text">富文本消息</string>
+</resources>

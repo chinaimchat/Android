@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="buy_usdt_page_bg">#121212</color>
+    <color name="buy_usdt_appbar_bg">#1E1E1E</color>
+    <color name="buy_usdt_card">#1E1E1E</color>
+    <color name="buy_usdt_card_stroke">#33FFFFFF</color>
+    <color name="buy_usdt_text_primary">#ECECEC</color>
+    <color name="buy_usdt_text_secondary">#9E9E9E</color>
+    <color name="buy_usdt_hint">#757575</color>
+    <color name="buy_usdt_primary">#64B5F6</color>
+    <color name="buy_usdt_error">#EF5350</color>
+    <color name="buy_usdt_cell_stroke">#424242</color>
+    <color name="buy_usdt_cell_selected_bg">#1A2A3D</color>
+    <color name="buy_usdt_cell_selected_stroke">#64B5F6</color>
+    <color name="buy_usdt_confirm_disabled">#616161</color>
+    <color name="buy_usdt_divider">#333333</color>
+    <color name="buy_usdt_input_bg">#2C2C2C</color>
+    <color name="buy_usdt_order_caption">#9E9E9E</color>
+    <color name="buy_usdt_order_processing">#FF8A65</color>
+    <color name="buy_usdt_cs_fab_glass">#B3f65835</color>
+    <color name="buy_usdt_cs_fab_glass_stroke">#66FFFFFF</color>
+    <color name="buy_usdt_cs_fab_text">#FFFFFF</color>
+    <color name="buy_usdt_cs_fab_ripple">#40FFFFFF</color>
+</resources>

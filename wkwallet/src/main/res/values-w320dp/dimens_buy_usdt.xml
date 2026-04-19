@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="buy_usdt_page_pad_h">8dp</dimen>
+    <dimen name="buy_usdt_amount_card_inner_top">8dp</dimen>
+    <dimen name="buy_usdt_amount_card_inner_bottom">10dp</dimen>
+    <dimen name="buy_usdt_grid_margin">3dp</dimen>
+    <dimen name="buy_usdt_grid_cell_min_h">42dp</dimen>
+    <dimen name="buy_usdt_input_min_h">42dp</dimen>
+    <dimen name="buy_usdt_btn_min_h">46dp</dimen>
+</resources>

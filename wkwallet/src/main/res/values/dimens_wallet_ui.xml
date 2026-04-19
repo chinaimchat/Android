@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="wallet_header_toolbar_h">56dp</dimen>
+    <dimen name="wallet_card_corner">16dp</dimen>
+    <dimen name="wallet_card_elevation">6dp</dimen>
+    <!-- 与 header paddingBottom 配套：上浮量应小于留白，重叠只压在渐变底带，不挡余额 -->
+    <dimen name="wallet_scroll_overlap">-40dp</dimen>
+    <dimen name="wallet_header_bottom_reserve">88dp</dimen>
+    <dimen name="wallet_quick_icon_size">44dp</dimen>
+    <!-- 充值 BottomSheet 内二维码，略小以便一屏展示、减少下滑 -->
+    <dimen name="recharge_sheet_qr_size">128dp</dimen>
+    <!-- 聊天红包气泡：QQ 风圆角卡片（四角一致，非尾巴气泡） -->
+    <dimen name="wallet_rp_chat_card_radius">12dp</dimen>
+</resources>
+

@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <application>
+        <activity
+            android:name=".WKScanActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WKScanOtherResultActivity"
+            android:screenOrientation="portrait" />
+    </application>
+</manifest>

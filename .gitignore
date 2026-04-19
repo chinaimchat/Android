@@ -1,0 +1,43 @@
+*.iml
+.gradle
+**/.gradle/
+.idea
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+**/.DS_Store
+
+# Gradle / Android build outputs
+**/build/
+build/
+**/release/
+**/debug/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+*.hprof
+
+# Native build
+.externalNativeBuild
+.cxx
+**/.cxx/
+
+# Local config
+local.properties
+**/local.properties
+/captures
+/.vscode
+
+# Signing keys (绝不能提交)
+*.keystore
+*.jks
+*.p12
+keystore.properties
+signing.properties

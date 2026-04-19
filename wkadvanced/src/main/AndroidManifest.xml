@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".ui.MsgRemindActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.search.ChatWithDateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.search.ChatImgActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.search.ChatWithFromUIDActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.search.RecordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.search.SearchAllMembersActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ReadMsgMembersActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.ChatBgListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.PreviewChatBgActivity"
+            android:screenOrientation="portrait" />
+
+    </application>
+
+</manifest>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="my_favorite">收藏</string>
+    <string name="favorite_detail">详情</string>
+    <string name="favorite_copy">复制</string>
+    <string name="favorite_copyed">已复制</string>
+    <string name="favorite_save">保存到相册</string>
+    <string name="favorite_added">已收藏</string>
+    <string name="favorite_check">立即查看</string>
+    <string name="favorite_no_data">没有任何收藏\n可以在聊天或朋友圈中长按消息来收藏</string>
+</resources>

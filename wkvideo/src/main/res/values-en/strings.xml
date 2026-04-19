@@ -1,0 +1,9 @@
+<resources>
+    <string name="wkvideo_recording">Camera</string>
+    <string name="wk_video">Video</string>
+    <string name="wk_video_go_to_chat_item">Go to chat</string>
+    <string name="not_use_the_camera">Do not use the camera during a call</string>
+    <string name="tap_photo_desc">Tap to take photo and hold to record video</string>
+    <string name="video_deleted">Video does not exist or has been deleted</string>
+    <string name="can_not_play_video_with_revoke">The video has been recalled and cannot be played</string>
+</resources>

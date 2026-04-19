@@ -1,0 +1,5 @@
+<resources>
+    <string name="start">Input…</string>
+    <string name="choose_member">Select</string>
+    <string name="rich_text">Rich text message</string>
+</resources>

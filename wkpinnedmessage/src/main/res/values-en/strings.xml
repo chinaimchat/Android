@@ -1,0 +1,10 @@
+<resources>
+    <string name="pin_message">Pin</string>
+    <string name="unpin_message">Unpin</string>
+    <string name="pin_message_count">Pinned Message</string>
+    <string name="clear_all_pinned_messages">UNPIN ALL MESSAGES</string>
+    <string name="pinned_messages_count">%d Pinned Messages</string>
+    <string name="clear_all_pinned_messages_alert_content">Are you sure you want to unpin this message for everyone?</string>
+
+</resources>
+

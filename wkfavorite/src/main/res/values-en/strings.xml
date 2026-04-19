@@ -1,0 +1,10 @@
+<resources>
+    <string name="my_favorite">Favorites</string>
+    <string name="favorite_detail">Detail</string>
+    <string name="favorite_copy">Copy</string>
+    <string name="favorite_copyed">Copied</string>
+    <string name="favorite_save">Save into the album</string>
+    <string name="favorite_added">Add to Favorites</string>
+    <string name="favorite_check">View now</string>
+    <string name="favorite_no_data">No favorites.\nYou can long-press a chat message or Moment and tap "Add to Favorites".</string>
+</resources>

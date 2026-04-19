@@ -1,0 +1,68 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true">
+        <activity
+            android:name=".ui.WalletActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Wallet.Material" />
+        <activity
+            android:name=".ui.SetPayPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.TransactionRecordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.BuyUsdtActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Wallet.BuyUsdt" />
+        <activity
+            android:name=".ui.BuyUsdtOrderListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Wallet.BuyUsdt" />
+        <activity
+            android:name=".ui.RechargeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.RechargeApplyDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.WithdrawActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Wallet.BuyUsdt"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.WithdrawalOrderListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Wallet.BuyUsdt" />
+        <activity
+            android:name=".ui.CustomerServiceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.WithdrawalDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".redpacket.SendRedPacketActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".redpacket.RedPacketDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".redpacket.RedPacketRecordHistoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".receive.WalletReceiveQrActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Wallet.BuyUsdt" />
+        <activity
+            android:name=".transfer.TransferActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".transfer.TransferDetailActivity"
+            android:screenOrientation="portrait" />
+    </application>
+</manifest>

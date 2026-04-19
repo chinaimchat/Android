@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/buy_usdt_page_bg"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/walletReceiveToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/buy_usdt_appbar_bg"
+        app:navigationIcon="@mipmap/ic_ab_back"
+        app:title="@string/wallet_receive_qr_title"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.Wallet.BuyUsdt.ToolbarTitle"
+        app:titleTextColor="@color/buy_usdt_text_primary" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="@dimen/buy_usdt_page_pad_bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/buy_usdt_page_pad_h"
+            android:paddingTop="@dimen/buy_usdt_page_pad_top">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/walletReceiveQrCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/buy_usdt_card"
+                app:cardCornerRadius="@dimen/buy_usdt_card_radius"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/buy_usdt_card_stroke"
+                app:strokeWidth="0.5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/buy_usdt_card_pad_h"
+                    android:paddingTop="@dimen/buy_usdt_amount_card_inner_top"
+                    android:paddingBottom="@dimen/buy_usdt_amount_card_inner_bottom">
+
+                    <com.chat.base.ui.components.AvatarView
+                        android:id="@+id/walletReceiveAvatarView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/walletReceiveNameTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:textColor="@color/buy_usdt_text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="昵称" />
+
+                    <TextView
+                        android:id="@+id/walletReceiveSubtitleTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center"
+                        android:text="@string/wallet_receive_qr_subtitle"
+                        android:textColor="@color/buy_usdt_primary"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:cardBackgroundColor="@color/buy_usdt_input_bg"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/buy_usdt_cell_stroke"
+                        app:strokeWidth="0.5dp">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/walletReceiveQrIv"
+                            android:layout_width="240dp"
+                            android:layout_height="240dp"
+                            android:layout_margin="12dp"
+                            android:contentDescription="@string/wallet_receive_qr_title"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            tools:src="@color/buy_usdt_divider" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:gravity="center"
+                        android:lineSpacingExtra="3dp"
+                        android:text="@string/wallet_receive_qr_hint"
+                        android:textColor="@color/buy_usdt_text_secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

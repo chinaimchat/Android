@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/homeColor"
+    android:orientation="vertical"
+    android:paddingTop="8dp">
+
+    <View style="@style/view_line_15" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/homeColor"
+            android:paddingStart="15dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="8dp"
+            android:text="@string/keep_alive_section_title"
+            android:textSize="13sp" />
+
+        <LinearLayout style="@style/layoutBgPaddingSmall">
+
+            <TextView
+                style="@style/leftTextView"
+                android:text="@string/im_fgs_switch_title" />
+
+            <com.chat.base.ui.components.SwitchView
+                android:id="@+id/imFgsSwitch"
+                android:layout_width="45dp"
+                android:layout_height="40dp"
+                android:checked="true" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/homeColor"
+            android:paddingStart="15dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="8dp"
+            android:text="@string/im_fgs_switch_desc"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/batteryRow"
+            style="@style/layoutBg">
+
+            <TextView
+                style="@style/leftTextView"
+                android:text="@string/battery_opt_row_title" />
+
+            <androidx.appcompat.widget.AppCompatImageView style="@style/arrow_right_iv" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/batteryRowDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/homeColor"
+            android:paddingStart="15dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="16dp"
+            android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>

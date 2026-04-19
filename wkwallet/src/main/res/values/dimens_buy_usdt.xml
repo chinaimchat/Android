@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 买币页整体更紧凑，便于小屏与长内容滚动；w320dp 等可再覆盖 -->
+    <dimen name="buy_usdt_page_pad_h">10dp</dimen>
+    <dimen name="buy_usdt_page_pad_top">6dp</dimen>
+    <dimen name="buy_usdt_page_pad_bottom">12dp</dimen>
+    <!-- 底部悬浮「联系客服」留白，避免正文与按钮重叠 -->
+    <dimen name="buy_usdt_scroll_bottom_pad">58dp</dimen>
+    <dimen name="buy_usdt_cs_fab_margin_bottom">12dp</dimen>
+    <dimen name="buy_usdt_cs_fab_radius">18dp</dimen>
+    <dimen name="buy_usdt_cs_fab_elevation">8dp</dimen>
+    <dimen name="buy_usdt_cs_fab_pad_h">12dp</dimen>
+    <dimen name="buy_usdt_cs_fab_pad_v">6dp</dimen>
+    <dimen name="buy_usdt_card_margin_top">8dp</dimen>
+    <dimen name="buy_usdt_card_radius">10dp</dimen>
+    <dimen name="buy_usdt_card_pad_h">10dp</dimen>
+    <dimen name="buy_usdt_card_inner_top">8dp</dimen>
+    <dimen name="buy_usdt_card_inner_bottom">10dp</dimen>
+    <dimen name="buy_usdt_amount_card_inner_top">10dp</dimen>
+    <dimen name="buy_usdt_amount_card_inner_bottom">12dp</dimen>
+    <dimen name="buy_usdt_method_pad_h">10dp</dimen>
+    <dimen name="buy_usdt_method_pad_v">8dp</dimen>
+    <dimen name="buy_usdt_icon_pay">24dp</dimen>
+    <dimen name="buy_usdt_chevron">18dp</dimen>
+    <dimen name="buy_usdt_grid_margin">4dp</dimen>
+    <!-- 金额档位不宜过扁，保证纵向比例与点击区域 -->
+    <dimen name="buy_usdt_grid_cell_min_h">48dp</dimen>
+    <dimen name="buy_usdt_btn_min_h">50dp</dimen>
+    <dimen name="buy_usdt_btn_margin_top">10dp</dimen>
+    <dimen name="buy_usdt_btn_corner">10dp</dimen>
+    <dimen name="buy_usdt_input_margin_top">8dp</dimen>
+    <dimen name="buy_usdt_input_min_h">46dp</dimen>
+    <dimen name="buy_usdt_input_pad_v">10dp</dimen>
+    <dimen name="buy_usdt_rate_faq_pad_v">6dp</dimen>
+</resources>

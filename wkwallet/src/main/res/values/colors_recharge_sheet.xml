@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="recharge_sheet_page_bg">#F5F5F5</color>
+    <color name="recharge_sheet_bar_bg">#FFFFFF</color>
+    <color name="recharge_sheet_card">#FFFFFF</color>
+    <color name="recharge_sheet_card_stroke">#14000000</color>
+    <color name="recharge_sheet_title">#212121</color>
+    <color name="recharge_sheet_action_blue">#1976D2</color>
+    <color name="recharge_sheet_chain_blue">#1976D2</color>
+    <color name="recharge_sheet_address_bg">#F0F0F0</color>
+    <color name="recharge_sheet_address_text">#333333</color>
+    <color name="recharge_sheet_btn_bg">#EEEEEE</color>
+    <color name="recharge_sheet_btn_icon">#1976D2</color>
+    <color name="recharge_sheet_min_label">#616161</color>
+    <color name="recharge_sheet_min_value">#757575</color>
+    <color name="recharge_sheet_footer">#9E9E9E</color>
+    <color name="recharge_sheet_usdt_green">#26A17B</color>
+    <color name="recharge_sheet_chevron">#BDBDBD</color>
+    <color name="recharge_sheet_pick_divider">#E8E8E8</color>
+</resources>

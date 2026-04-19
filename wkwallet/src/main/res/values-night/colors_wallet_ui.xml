@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="wallet_page_bg">#121212</color>
+    <color name="wallet_header_balance_text">#FFFFFF</color>
+    <color name="wallet_header_subtext">#CCFFFFFF</color>
+    <color name="wallet_card_bg">#1E1E1E</color>
+    <color name="wallet_card_stroke">#33FFFFFF</color>
+    <!-- 夜间横幅：与浅色同逻辑，约 80% 不透明 -->
+    <color name="wallet_banner_bg">#CC4A2C22</color>
+    <color name="wallet_banner_title">#E6E6E6</color>
+    <color name="wallet_banner_sub">#9E9E9E</color>
+    <color name="wallet_market_title">#E6E6E6</color>
+    <color name="wallet_market_sub">#9E9E9E</color>
+    <color name="wallet_market_row_bg">#1E1E1E</color>
+    <color name="wallet_market_positive">#FF6B6B</color>
+    <color name="wallet_market_negative">#69F0AE</color>
+    <color name="wallet_action_label">#E0E0E0</color>
+    <color name="wallet_crypto_usdt">#26A17B</color>
+    <color name="wallet_crypto_bnb">#F3BA2F</color>
+    <color name="wallet_crypto_btc">#F7931A</color>
+    <color name="wallet_crypto_eth">#627EEA</color>
+</resources>

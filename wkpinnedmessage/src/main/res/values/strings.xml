@@ -1,0 +1,9 @@
+<resources>
+    <string name="pin_message">置顶</string>
+    <string name="unpin_message">解除置顶</string>
+    <string name="pin_message_count">置顶消息</string>
+    <string name="clear_all_pinned_messages">取消所有消息置顶</string>
+    <string name="pinned_messages_count">%d 条置顶消息</string>
+    <string name="clear_all_pinned_messages_alert_content">您确定要为所有人解除此消息的置顶吗？</string>
+</resources>
+

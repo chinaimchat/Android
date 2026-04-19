@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ========== 聊天红包 · 未领取（高饱和、少橘色，偏正红） ========== -->
+    <color name="wallet_rp_qq_start">#FF6A6A</color>
+    <color name="wallet_rp_qq_mid">#E53935</color>
+    <color name="wallet_rp_qq_end">#B71C1C</color>
+    <color name="wallet_rp_qq_card_stroke">#66FFFFFF</color>
+    <color name="wallet_rp_qq_card_shadow">#38000000</color>
+
+    <!-- ========== 聊天红包 · 已领取（与未领同色带，降低饱和、略混灰，保持「还是红包」） ========== -->
+    <color name="wallet_rp_qq_opened_start">#E5A3A3</color>
+    <color name="wallet_rp_qq_opened_mid">#C06B6B</color>
+    <color name="wallet_rp_qq_opened_end">#965050</color>
+    <color name="wallet_rp_qq_opened_stroke">#55FFF5F5</color>
+    <color name="wallet_rp_qq_opened_shadow">#30000000</color>
+    <!-- 压在灰红底上：浅色字，与未领白字同系，略柔一点表示已领 -->
+    <color name="wallet_rp_qq_opened_text_main">#FFF8F7</color>
+    <color name="wallet_rp_qq_opened_text_sub">#F0DEDE</color>
+    <color name="wallet_rp_qq_opened_divider">#44FFFFFF</color>
+
+    <!-- 「开」徽章：香槟金，与新主红协调 -->
+    <color name="wallet_rp_qq_btn_gold_start">#FFF8E8</color>
+    <color name="wallet_rp_qq_btn_gold_end">#E5C76A</color>
+    <color name="wallet_rp_qq_btn_ring">#FFFCF5</color>
+    <color name="wallet_rp_qq_btn_text">#8B1A15</color>
+
+    <!-- 详情页金额 -->
+    <color name="wallet_rp_qq_amount">#FFD54F</color>
+
+    <!-- 发红包等主按钮：与未领红包同色带 -->
+    <color name="wallet_rp_qq_btn_bar_start">#FF5E5E</color>
+    <color name="wallet_rp_qq_btn_bar_end">#C62828</color>
+
+    <!-- 转账气泡 · 待接收：#F5A623 → #F08C00（见 bg_transfer_bubble.xml） -->
+    <!-- 转账气泡 · 已接收/已退回：同上橙金带降饱和、略混灰，与「已领红包」思路一致 -->
+    <color name="wallet_transfer_accepted_start">#DEB56A</color>
+    <color name="wallet_transfer_accepted_end">#B38438</color>
+    <color name="wallet_transfer_accepted_text_main">#FFFBF6</color>
+    <color name="wallet_transfer_accepted_text_sub">#F2E8D8</color>
+    <color name="wallet_transfer_accepted_divider">#44FFFFFF</color>
+</resources>
