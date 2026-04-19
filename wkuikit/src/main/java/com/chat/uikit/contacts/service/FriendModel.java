@@ -77,12 +77,16 @@ public class FriendModel extends WKBaseModel {
      * 通过好友请求
      *
      * @param token           通过token
+     * @param remark          同意时自定义自我介绍，可为空（空则服务端默认）
      * @param iCommonListener 返回
      */
-    public void agreeFriendApply(String token, final ICommonListener iCommonListener) {
+    public void agreeFriendApply(String token, String remark, final ICommonListener iCommonListener) {
 
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("token", token);
+        if (!TextUtils.isEmpty(remark)) {
+            jsonObject1.put("remark", remark.trim());
+        }
         request(createService(FriendService.class).agreeFriendApply(jsonObject1), new IRequestResultListener<>() {
             @Override
             public void onSuccess(CommonResponse result) {

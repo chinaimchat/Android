@@ -153,6 +153,9 @@
     <string name="dark_save_tips">新的设置需要重启%s才能生效</string>
 
     <string name="input_apply_remark">请输入申请备注</string>
+    <string name="agree_friend_title">同意加好友</string>
+    <string name="agree_friend_message">可填写向对方展示的自我介绍，不填则使用默认</string>
+    <string name="agree_friend_hint">自我介绍（选填）</string>
     <string name="source_from">来源</string>
     <string name="source_from_unknown">未知</string>
     <string name="user_detail_info">资料设置</string>

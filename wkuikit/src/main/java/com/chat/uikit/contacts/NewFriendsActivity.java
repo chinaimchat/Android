@@ -10,6 +10,7 @@ import com.chat.base.config.WKSharedPreferencesUtil;
 import com.chat.base.db.ApplyDB;
 import com.chat.base.entity.NewFriendEntity;
 import com.chat.base.net.HttpResponseCode;
+import com.chat.base.utils.WKDialogUtils;
 import com.chat.base.utils.WKReader;
 import com.chat.base.utils.singleclick.SingleClickUtil;
 import com.chat.uikit.R;
@@ -83,7 +84,13 @@ public class NewFriendsActivity extends WKBaseActivity<ActCommonListLayoutBindin
             NewFriendEntity newFriendEntity = (NewFriendEntity) adapter1.getItem(position);
             if (newFriendEntity != null) {
                 if (view1.getId() == R.id.agreeBtn) {
-                    FriendModel.getInstance().agreeFriendApply(newFriendEntity.token, (code, msg) -> {
+                    WKDialogUtils.getInstance().showInputDialog(NewFriendsActivity.this,
+                            getString(R.string.agree_friend_title),
+                            getString(R.string.agree_friend_message),
+                            "",
+                            getString(R.string.agree_friend_hint),
+                            100,
+                            text -> FriendModel.getInstance().agreeFriendApply(newFriendEntity.token, text, (code, msg) -> {
                         if (code == HttpResponseCode.success) {
                             FriendModel.getInstance().syncFriends(null);
                             newFriendEntity.status = 1;
@@ -91,7 +98,7 @@ public class NewFriendsActivity extends WKBaseActivity<ActCommonListLayoutBindin
                             ApplyDB.getInstance().update(newFriendEntity);
                             WKContactsDB.getInstance().updateFriendStatus(newFriendEntity.apply_uid, 1);
                         }
-                    });
+                    }));
                 }
             }
         });

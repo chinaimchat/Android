@@ -152,6 +152,9 @@
     <string name="dark_save_tips">New settings will take effect after restarting %s</string>
 
     <string name="input_apply_remark">Input apply remark</string>
+    <string name="agree_friend_title">Accept friend request</string>
+    <string name="agree_friend_message">Optional greeting shown to the other party. Leave blank to use the default.</string>
+    <string name="agree_friend_hint">Self-introduction (optional)</string>
     <string name="source_from">Source</string>
     <string name="source_from_unknown">Unknown</string>
     <string name="user_detail_info">Profile settings</string>
