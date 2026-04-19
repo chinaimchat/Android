@@ -115,6 +115,7 @@ public class AvatarView extends FrameLayout {
 
     public void showAvatar(String channelID, byte channelType, String avatarCacheKey) {
         String url = getAvatarURL(channelID, channelType);
+        url = WKApiConfig.appendAvatarCacheKey(url, avatarCacheKey);
         GlideUtils.getInstance().showAvatarImg(getContext(), url, avatarCacheKey, imageView);
     }
 
@@ -147,21 +148,38 @@ public class AvatarView extends FrameLayout {
     }
 
     public void showAvatar(WKChannel channel, boolean showOnlineStatus) {
-        String avatarCacheKey = channel.avatarCacheKey;
-        String url;
-        if (!TextUtils.isEmpty(channel.avatar) && channel.avatar.contains("/")) {
-            url = WKApiConfig.getShowUrl(channel.avatar);
-        } else {
-            url = getAvatarURL(channel.channelID, channel.channelType);
+        // 重要修复：会话列表 / 联系人列表 / 聊天气泡 等 Adapter 持有的是
+        // WKChannel 的 *旧实例引用*。对方上传新头像时 wk_userAvatarUpdate CMD 只会
+        // 更新 SDK 持久化行 + 触发 fetchChannelInfo，不一定原地改写这些旧实例的
+        // avatarCacheKey 字段。如果继续按旧实例的 avatarCacheKey 拼 URL/缓存键，
+        // Glide 会一直命中旧默认头像的缓存。这里以 channelID 重新去 ChannelManager
+        // 取一份「最新」WKChannel，只要 ID 非空就用最新，保证 avatarCacheKey 与
+        // online/lastOffline 等也都是新的。
+        WKChannel use = channel;
+        if (channel != null && !TextUtils.isEmpty(channel.channelID)) {
+            WKChannel fresh = WKIM.getInstance().getChannelManager().getChannel(channel.channelID, channel.channelType);
+            if (fresh != null && !TextUtils.isEmpty(fresh.channelID)) {
+                use = fresh;
+            }
         }
+        String avatarCacheKey = use.avatarCacheKey;
+        String url;
+        if (!TextUtils.isEmpty(use.avatar) && use.avatar.contains("/")) {
+            url = WKApiConfig.getShowUrl(use.avatar);
+        } else {
+            url = getAvatarURL(use.channelID, use.channelType);
+        }
+        // 把 avatarCacheKey 拼进 URL，保证 server 一旦换了头像、本地 key 一变，
+        // Glide / OkHttp / HTTP 协议缓存就全部失效（详见 WKApiConfig.appendAvatarCacheKey）。
+        url = WKApiConfig.appendAvatarCacheKey(url, avatarCacheKey);
         GlideUtils.getInstance().showAvatarImg(imageView.getContext(), url, avatarCacheKey, imageView);
         if (showOnlineStatus) {
-            if (channel.online == 1) {
+            if (use.online == 1) {
                 spotView.setVisibility(VISIBLE);
                 onlineTv.setVisibility(INVISIBLE);
             } else {
                 spotView.setVisibility(GONE);
-                String showTime = WKTimeUtils.getInstance().getOnlineTime(channel.lastOffline);
+                String showTime = WKTimeUtils.getInstance().getOnlineTime(use.lastOffline);
                 if (TextUtils.isEmpty(showTime)) {
                     onlineTv.setVisibility(INVISIBLE);
                 } else {

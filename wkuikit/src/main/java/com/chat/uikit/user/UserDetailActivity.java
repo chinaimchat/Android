@@ -35,7 +35,6 @@ import com.chat.base.ui.components.NormalClickableSpan;
 import com.chat.base.utils.LayoutHelper;
 import com.chat.base.utils.WKDialogUtils;
 import com.chat.base.utils.WKReader;
-import com.chat.base.utils.WKTimeUtils;
 import com.chat.base.utils.WKToastUtils;
 import com.chat.base.utils.singleclick.SingleClickUtil;
 import com.chat.uikit.enity.UserInfo;
@@ -382,7 +381,14 @@ public class UserDetailActivity extends WKBaseActivity<ActUserDetailLayoutBindin
 
 
     private void showImg() {
-        String uri = WKApiConfig.getAvatarUrl(uid) + "?key=" + WKTimeUtils.getInstance().getCurrentMills();
+        // 先把 SDK 里这枚 channel 的 avatarCacheKey 换成新 UUID，再用同一个 key 拼大图 URL：
+        // 1) 大图 URL = `…/avatar?v=<newKey>` → 与 server 约定的 v= 一致，绕过任何 HTTP/Glide 缓存；
+        // 2) 同一个 key 写回 SDK，触发 addOnRefreshChannelInfo → setData() 重新绑定小头像，
+        //    经 AvatarView 走 WKApiConfig.appendAvatarCacheKey 后小头像 URL 也变成 `…?v=<newKey>`，
+        //    与大图共享同一个新缓存条目，不会再出现「关闭大图后小头像又回到默认头像」的问题。
+        String newKey = UUID.randomUUID().toString().replaceAll("-", "");
+        WKIM.getInstance().getChannelManager().updateAvatarCacheKey(uid, WKChannelType.PERSONAL, newKey);
+        String uri = WKApiConfig.getAvatarUrl(uid) + "?v=" + newKey;
         //查看大图
         List<Object> tempImgList = new ArrayList<>();
         List<ImageView> imageViewList = new ArrayList<>();
@@ -390,7 +396,9 @@ public class UserDetailActivity extends WKBaseActivity<ActUserDetailLayoutBindin
         tempImgList.add(WKApiConfig.getShowUrl(uri));
         int index = 0;
         WKDialogUtils.getInstance().showImagePopup(this, tempImgList, imageViewList, wkVBinding.avatarView.imageView, index, new ArrayList<>(), null, null);
-        WKIM.getInstance().getChannelManager().updateAvatarCacheKey(uid, WKChannelType.PERSONAL, UUID.randomUUID().toString().replaceAll("-", ""));
+        // 兜底：如果 SDK 因为某些原因没及时回调 onRefreshChannelInfo，主动 rebind 一次小头像，
+        // 防止「关闭大图后小头像还是旧的（默认头像）」。
+        setData();
     }
 
     ActivityResultLauncher<Intent> chooseResultLac = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
