@@ -195,7 +195,7 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
                 } else if (!TextUtils.equals(pwd, confirmPwd)) {
                     showSingleBtnDialog(getString(R.string.pwd_confirm_not_match));
                 } else {
-                    if (appConfig != null && appConfig.register_invite_on == 1 && TextUtils.isEmpty(inviteCode)) {
+                    if (appConfig != null && appConfig.invite_code_system_on == 1 && TextUtils.isEmpty(inviteCode)) {
                         showSingleBtnDialog(getString(R.string.invite_code_not_null));
                         return;
                     }
@@ -269,7 +269,7 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
         WKCommonModel.getInstance().getAppConfig((code, msg, wkappConfig) -> {
             if (code == HttpResponseCode.success) {
                 appConfig = wkappConfig;
-                if (appConfig != null && appConfig.register_invite_on == 1) {
+                if (appConfig != null && appConfig.invite_code_system_on == 1) {
                     wkVBinding.inviteCodeTv.setHint(R.string.input_invite_code_must);
                     wkVBinding.inviteLayout.setVisibility(View.VISIBLE);
                     wkVBinding.inviteLineView.setVisibility(View.VISIBLE);

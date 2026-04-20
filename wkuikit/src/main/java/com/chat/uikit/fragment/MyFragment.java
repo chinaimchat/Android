@@ -39,7 +39,7 @@ public class MyFragment extends WKBaseFragment<FragMyLayoutBinding> {
         wkVBinding.recyclerView.setNestedScrollingEnabled(false);
         adapter = new PersonalItemAdapter(new ArrayList<>());
         initAdapter(wkVBinding.recyclerView, adapter);
-        refreshPersonalMenu(WKConfig.getInstance().getAppConfig().register_invite_on);
+        refreshPersonalMenu(WKConfig.getInstance().getAppConfig().invite_code_system_on);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class MyFragment extends WKBaseFragment<FragMyLayoutBinding> {
         WKCommonModel.getInstance().getAppConfig((code, msg, wkappConfig) -> {
             if (!isAdded() || getActivity() == null || adapter == null) return;
             if (code == HttpResponseCode.success && wkappConfig != null) {
-                refreshPersonalMenu(wkappConfig.register_invite_on);
+                refreshPersonalMenu(wkappConfig.invite_code_system_on);
             }
         });
     }
@@ -109,7 +109,7 @@ public class MyFragment extends WKBaseFragment<FragMyLayoutBinding> {
         return -1;
     }
 
-    private void refreshPersonalMenu(int registerInviteOn) {
+    private void refreshPersonalMenu(int inviteCodeSystemOn) {
         if (adapter == null) {
             return;
         }
