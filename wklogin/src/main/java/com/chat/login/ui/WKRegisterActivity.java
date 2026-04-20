@@ -226,15 +226,17 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
 
     @Override
     protected void initListener() {
+        // 两个眼睛相互独立：避免“瞟一眼确认栏也把密码栏暴露给肩膀后的人”
         wkVBinding.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                wkVBinding.pwdEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                wkVBinding.pwdConfirmEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            } else {
-                wkVBinding.pwdEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                wkVBinding.pwdConfirmEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            }
+            wkVBinding.pwdEt.setTransformationMethod(isChecked
+                    ? HideReturnsTransformationMethod.getInstance()
+                    : PasswordTransformationMethod.getInstance());
             wkVBinding.pwdEt.setSelection(Objects.requireNonNull(wkVBinding.pwdEt.getText()).length());
+        });
+        wkVBinding.checkBoxConfirm.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            wkVBinding.pwdConfirmEt.setTransformationMethod(isChecked
+                    ? HideReturnsTransformationMethod.getInstance()
+                    : PasswordTransformationMethod.getInstance());
             wkVBinding.pwdConfirmEt.setSelection(Objects.requireNonNull(wkVBinding.pwdConfirmEt.getText()).length());
         });
     }

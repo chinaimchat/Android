@@ -195,6 +195,13 @@
                 android:textColor="@color/colorDark"
                 android:textColorHint="@color/color999"
                 android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/checkBoxConfirm"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:button="@drawable/selector_account_relate_see_password"
+                android:checked="false" />
         </LinearLayout>
 
         <View
