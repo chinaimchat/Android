@@ -29,11 +29,12 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <!-- 冷启动专用：Android 12+ 走 SplashScreen API，低版本走 windowBackground -->
+    <!-- 冷启动专用：直接使用启动图文件，减少中间引用链导致的异常。 -->
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="android:windowBackground">@drawable/splash_screen_bg</item>
-        <item name="windowSplashScreenBackground">@drawable/splash_screen_bg</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_transparent_icon</item>
+        <item name="android:windowBackground">@drawable/splash_launch</item>
+        <item name="windowSplashScreenBackground">#030B39</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_logo</item>
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
         <item name="postSplashScreenTheme">@style/Theme.FullscreenTheme</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
