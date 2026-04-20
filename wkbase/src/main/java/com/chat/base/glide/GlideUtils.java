@@ -165,16 +165,27 @@ public class GlideUtils {
             Context context = weakReference.get();
             if (context instanceof Activity activity) {
                 if (!activity.isDestroyed()) {
-                    if (TextUtils.isEmpty(key)) {
-                        Glide.with(context).load(url).dontAnimate()
-                                .apply(GlideRequestOptions.getInstance().normalRequestOption())
-                                .into(imageView);
-                    } else {
-                        Glide.with(context).load(new MyGlideUrlWithId(url, key)).dontAnimate()
-                                .apply(GlideRequestOptions.getInstance().normalRequestOption())
-                                .into(imageView);
-                    }
-
+                    // 头像缓存策略（修复「列表空白、点开放大正常、返回又空白」）：
+                    //
+                    // 以前用 MyGlideUrlWithId 把 Glide 的 cache key 整个替换成 avatarCacheKey，
+                    // 问题：
+                    //   1) 当多个列表 cell 的 key 相同（如新频道、未初始化、全 0）时，
+                    //      Glide 会把它们视为同一个缓存条目，先加载失败的「error drawable」被缓存，
+                    //      后续即便 URL 对、网络能拉到真实头像，也因命中失败缓存而继续显示空白；
+                    //   2) 列表与用户详情使用不同的 WKChannel 实例/时刻更新，
+                    //      一旦 key 在详情里被 UserDetailActivity.showImg() 换成新 UUID，
+                    //      列表 cell 若没能及时同步到新 key，就会一直吃到「默认头像」那条旧缓存。
+                    //
+                    // 现在：URL 已由 WKApiConfig.appendAvatarCacheKey 拼上 `?v=<key>`，
+                    // 直接用 URL 作 Glide cache key：
+                    //   - 不同用户 URL 不同 → 不会相互污染；
+                    //   - 同一用户换头像后 key 变、URL 变 → 自然失效；
+                    //   - key 不变 → URL 不变 → 缓存命中，不闪。
+                    // 同时 skipMemoryCache(false)+ diskCacheStrategy(ALL) 保证「返回列表」能直接命中。
+                    RequestOptions avatarOptions = GlideRequestOptions.getInstance().normalRequestOption();
+                    Glide.with(context).load(url).dontAnimate()
+                            .apply(avatarOptions)
+                            .into(imageView);
                 }
             }
         }

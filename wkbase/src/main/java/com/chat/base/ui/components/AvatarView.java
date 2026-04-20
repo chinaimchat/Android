@@ -163,9 +163,20 @@ public class AvatarView extends FrameLayout {
             }
         }
         String avatarCacheKey = use.avatarCacheKey;
+        // 重要修复：以前的逻辑是优先用 SDK 下发的 use.avatar 字段来拼 URL，
+        // 但实测服务端对部分用户（如 u_10000 系统号）返回的 avatar 形如
+        //   /v1/users/u_10000/avatar.png
+        // 这条 URL 服务端虽然 200 + Content-Type: image/jpeg，
+        // 但实际 body 被 Glide / 系统 ImageDecoder 判定为非法图（DecodePath
+        // 的 Bitmap / GifDrawable / BitmapDrawable 全部失败），表现：
+        //   - 列表 / 聊天气泡永远空白；
+        //   - 放大弹窗走的是 getAvatarUrl(uid)+"?key=" 的规范地址，能正常解码。
+        // 所以这里统一优先走规范头像接口 users/<id>/avatar（与放大逻辑完全一致），
+        // 仅当 use.avatar 是带协议头的完整外链（真正的 CDN/外部头像）时才采用。
         String url;
-        if (!TextUtils.isEmpty(use.avatar) && use.avatar.contains("/")) {
-            url = WKApiConfig.getShowUrl(use.avatar);
+        if (!TextUtils.isEmpty(use.avatar)
+                && (use.avatar.startsWith("http://") || use.avatar.startsWith("https://"))) {
+            url = use.avatar;
         } else {
             url = getAvatarURL(use.channelID, use.channelType);
         }
@@ -194,14 +205,11 @@ public class AvatarView extends FrameLayout {
     }
 
     private String getAvatarURL(String channelID, byte channelType) {
-        String filePath = WKConstants.avatarCacheDir + channelType + "_" + channelID;
-        File file = new File(filePath);
-        if (file.exists()) {
-            return filePath;
-        } else {
-            String url = WKApiConfig.getShowAvatar(channelID, channelType);
-            return url;
-        }
+        // 修复：列表页曾优先读取本地固定路径头像缓存（avatarCacheDir/type_id）。
+        // 当该本地文件是旧头像/损坏文件时，详情页能显示新头像（走网络 URL），
+        // 但返回列表又会回退命中旧本地文件，表现为“关闭后又变空白/默认”。
+        // 这里统一返回服务端头像 URL，并配合 appendAvatarCacheKey 做版本失效。
+        return WKApiConfig.getShowAvatar(channelID, channelType);
     }
 
     public static void clearCache(String channelID, byte channelType) {
