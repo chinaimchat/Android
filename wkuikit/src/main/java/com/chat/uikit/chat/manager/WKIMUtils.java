@@ -634,7 +634,10 @@ public class WKIMUtils {
 //        Activity activity = ActManagerUtils.getInstance().getCurrentActivity();
 //        if (activity == null || activity.getComponentName().getClassName().equals(TabActivity.class.getName())) {
         boolean isForeground = WKUIKitApplication.getInstance().isAppInForeground();
-        if (isForeground) {
+        boolean lockedOrScreenOff = WKUIKitApplication.getInstance()
+                .isDeviceLockedOrScreenOff(WKUIKitApplication.getInstance().getContext());
+        // 仅在真正前台可见时走应用内提示；锁屏/灭屏时放行系统通知。
+        if (isForeground && !lockedOrScreenOff) {
             if (playNewMsgMedia) {
                 defaultMediaPlayer();
             }

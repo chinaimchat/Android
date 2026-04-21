@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.app.KeyguardManager;
+import android.os.PowerManager;
 import android.os.Build;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -171,6 +173,34 @@ public class WKUIKitApplication {
         this.appInForeground = appInForeground;
     }
 
+    /**
+     * 锁屏/灭屏场景下，即使进程仍被判定为前台，也应允许系统通知弹出。
+     */
+    public boolean isDeviceLockedOrScreenOff(Context context) {
+        if (context == null) {
+            return false;
+        }
+        boolean locked = false;
+        try {
+            KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+            locked = keyguardManager != null && keyguardManager.isKeyguardLocked();
+        } catch (Exception ignored) {
+        }
+        boolean screenOff = false;
+        try {
+            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            if (powerManager != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                    screenOff = !powerManager.isInteractive();
+                } else {
+                    screenOff = !powerManager.isScreenOn();
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return locked || screenOff;
+    }
+
     public void initIM() {
         if (!TextUtils.isEmpty(WKConfig.getInstance().getToken())) {
             //设置开发模式
@@ -222,8 +252,8 @@ public class WKUIKitApplication {
             if (ctx == null) {
                 return null;
             }
-            // App 前台时不展示系统通知，避免在聊天页面被通知栏打断。
-            if (isAppInForeground()) {
+            // 仅在「真前台可见」时抑制系统通知；锁屏/灭屏时即使前台态也要放行通知。
+            if (isAppInForeground() && !isDeviceLockedOrScreenOff(ctx)) {
                 return null;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
