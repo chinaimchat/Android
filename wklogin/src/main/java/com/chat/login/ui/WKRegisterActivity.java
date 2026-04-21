@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import com.chat.base.base.WKBaseActivity;
 import com.chat.base.common.WKCommonModel;
 import com.chat.base.config.WKApiConfig;
+import com.chat.base.config.WKConfig;
 import com.chat.base.endpoint.EndpointCategory;
 import com.chat.base.endpoint.EndpointManager;
 import com.chat.base.endpoint.entity.LoginMenu;
@@ -268,22 +269,43 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
 
     @Override
     protected void initData() {
+        showConfigLoading(true);
+        // 先按本地缓存渲染一次，避免首次打开时邀请码栏状态抖动。
+        appConfig = WKConfig.getInstance().getAppConfig();
+        applyInviteCodeConfig(appConfig);
         WKCommonModel.getInstance().getAppConfig((code, msg, wkappConfig) -> {
             if (code == HttpResponseCode.success) {
                 appConfig = wkappConfig;
-                if (appConfig != null && appConfig.invite_code_system_on == 1) {
-                    wkVBinding.inviteCodeTv.setHint(R.string.input_invite_code_must);
-                    wkVBinding.inviteLayout.setVisibility(View.VISIBLE);
-                    wkVBinding.inviteLineView.setVisibility(View.VISIBLE);
-                } else {
-                    wkVBinding.inviteCodeTv.setHint(R.string.input_invite_code_not_must);
-                    wkVBinding.inviteLayout.setVisibility(View.GONE);
-                    wkVBinding.inviteLineView.setVisibility(View.GONE);
-                }
+                applyInviteCodeConfig(appConfig);
             } else {
                 showToast(LoginErrorMessageMapper.map(this, msg));
             }
+            showConfigLoading(false);
         });
+    }
+
+    private void applyInviteCodeConfig(WKAPPConfig config) {
+        if (config != null && config.invite_code_system_on == 1) {
+            wkVBinding.inviteCodeTv.setHint(R.string.input_invite_code_must);
+            wkVBinding.inviteLayout.setVisibility(View.VISIBLE);
+            wkVBinding.inviteLineView.setVisibility(View.VISIBLE);
+        } else {
+            wkVBinding.inviteCodeTv.setHint(R.string.input_invite_code_not_must);
+            wkVBinding.inviteLayout.setVisibility(View.GONE);
+            wkVBinding.inviteLineView.setVisibility(View.GONE);
+        }
+    }
+
+    private void showConfigLoading(boolean show) {
+        if (show) {
+            wkVBinding.configLoadingLayout.setVisibility(View.VISIBLE);
+            wkVBinding.registerContentLayout.setVisibility(View.INVISIBLE);
+            wkVBinding.registerAppTv.setVisibility(View.INVISIBLE);
+        } else {
+            wkVBinding.configLoadingLayout.setVisibility(View.GONE);
+            wkVBinding.registerContentLayout.setVisibility(View.VISIBLE);
+            wkVBinding.registerAppTv.setVisibility(View.VISIBLE);
+        }
     }
 
     private void checkStatus() {
