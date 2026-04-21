@@ -22,6 +22,7 @@ public class UserInfoEntity {
     public int lock_after_minute;
     public String rsa_public_key;
     public int msg_expire_second;
+    public String category;
     public UserInfoSetting setting;
 
 }

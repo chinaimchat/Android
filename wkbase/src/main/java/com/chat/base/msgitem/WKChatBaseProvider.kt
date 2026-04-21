@@ -1117,15 +1117,11 @@ abstract class WKChatBaseProvider : BaseItemProvider<WKUIChatMsgItemEntity>() {
         //撤回和删除不能同时存在
         if (isAddDelete && mMsg.flame == 0 && result == null) {
             val loginUID = WKConfig.getInstance().uid
-            val canDeleteAnyMessage = isPrivilegedLoginAccount() || (mMsg.channelType == WKChannelType.GROUP && run {
-                val member = WKIM.getInstance().channelMembersManager.getMember(
-                    mMsg.channelID,
-                    mMsg.channelType,
-                    loginUID
-                )
-                member != null && member.role != WKChannelMemberRole.normal
-            })
-            if (!TextUtils.isEmpty(mMsg.fromUID) && mMsg.fromUID != loginUID && !canDeleteAnyMessage) {
+            val isOthersMessage = !TextUtils.isEmpty(mMsg.fromUID) && mMsg.fromUID != loginUID
+            // 仅当"明确可判定为普通成员且非特权号"时隐藏删除按钮；
+            // 任一判定依赖的信息（category/群成员信息）尚未加载完成时，一律保守显示删除按钮，
+            // 避免群主/管理员/特权号在首次打开会话时因异步缓存未就绪而误隐藏。
+            if (isOthersMessage && isConfirmedNormalNonPrivileged(mMsg, loginUID)) {
                 return list
             }
             list.add(
@@ -1630,10 +1626,53 @@ abstract class WKChatBaseProvider : BaseItemProvider<WKUIChatMsgItemEntity>() {
     private fun isPrivilegedLoginAccount(): Boolean {
         val loginUID = WKConfig.getInstance().uid
         if (loginUID.isNullOrEmpty()) return false
-        val me = WKIM.getInstance().channelManager.getChannel(loginUID, WKChannelType.PERSONAL)
-        val category = me?.category ?: return false
+        if (WKSystemAccount.isSystemAccount(loginUID)) return true
+        var me = WKIM.getInstance().channelManager.getChannel(loginUID, WKChannelType.PERSONAL)
+        var category = me?.category
+        if (category.isNullOrEmpty()) {
+            // 兜底：有些场景当前账号频道资料尚未入缓存，先触发一次拉取，再尝试用本地用户信息回退。
+            WKIM.getInstance().channelManager.fetchChannelInfo(loginUID, WKChannelType.PERSONAL)
+            me = WKIM.getInstance().channelManager.getChannel(loginUID, WKChannelType.PERSONAL)
+            category = me?.category
+        }
+        if (category.isNullOrEmpty()) {
+            category = WKConfig.getInstance().userInfo?.category
+        }
+        if (category.isNullOrEmpty()) return false
         return category == WKSystemAccount.accountCategorySystem ||
             category == WKSystemAccount.accountCategoryCustomerService
+    }
+
+    /**
+     * 是否"明确可判定为非特权、普通成员"。
+     * 只有在所有关键信息（category、群成员角色）都已就绪且判定为普通用户时才返回 true；
+     * 只要有任何一项未就绪（例如首次打开群时 channelInfo / 群成员列表还没同步回来），
+     * 就返回 false（保守显示删除按钮），避免把群主/管理员/特权号误判为普通成员。
+     */
+    private fun isConfirmedNormalNonPrivileged(mMsg: WKMsg, loginUID: String?): Boolean {
+        if (loginUID.isNullOrEmpty()) return false
+        if (isPrivilegedLoginAccount()) return false
+
+        val selfChannelCategory = WKIM.getInstance().channelManager
+            .getChannel(loginUID, WKChannelType.PERSONAL)?.category
+        val cachedCategory = WKConfig.getInstance().userInfo?.category
+        val categoryKnown = !selfChannelCategory.isNullOrEmpty() || !cachedCategory.isNullOrEmpty()
+        if (!categoryKnown) {
+            // category 尚未拉取回来，无法证明是非特权号 → 保守显示删除按钮
+            WKIM.getInstance().channelManager.fetchChannelInfo(loginUID, WKChannelType.PERSONAL)
+            return false
+        }
+
+        if (mMsg.channelType == WKChannelType.GROUP) {
+            val member = WKIM.getInstance().channelMembersManager.getMember(
+                mMsg.channelID,
+                mMsg.channelType,
+                loginUID
+            ) ?: return false // 成员信息未加载 → 保守显示
+            return member.role == WKChannelMemberRole.normal
+        }
+        // 单聊：category 已明确且非特权，则为普通用户
+        return true
     }
 
     override fun onViewAttachedToWindow(holder: BaseViewHolder) {
