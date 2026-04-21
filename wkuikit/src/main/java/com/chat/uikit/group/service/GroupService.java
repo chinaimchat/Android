@@ -11,6 +11,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.POST;
@@ -61,6 +62,9 @@ public interface GroupService {
 
     @POST("groups/{group_no}/exit")
     Observable<CommonResponse> exitGroup(@Path("group_no") String group_no);
+
+    @DELETE("groups/{group_no}/disband")
+    Observable<CommonResponse> disbandGroup(@Path("group_no") String group_no);
 
     @GET("groups/{group_no}/members")
     Observable<List<GroupMember>> groupMembers(@Path("group_no") String groupNO, @Query("keyword") String keyword, @Query("page") int page, @Query("limit") int limit);

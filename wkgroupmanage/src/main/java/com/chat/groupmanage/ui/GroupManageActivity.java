@@ -2,6 +2,7 @@ package com.chat.groupmanage.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -10,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import com.chat.base.base.WKBaseActivity;
 import com.chat.base.config.WKConfig;
+import com.chat.base.config.WKSystemAccount;
 import com.chat.base.endpoint.EndpointManager;
 import com.chat.base.msgitem.WKChannelMemberRole;
 import com.chat.base.utils.singleclick.SingleClickUtil;
@@ -177,9 +179,24 @@ public class GroupManageActivity extends WKBaseActivity<ActGroupManageLayoutBind
             entity.itemType = 2;
             tempList.add(entity);
             wkVBinding.groupOwnerTransferLayout.setVisibility(View.VISIBLE);
+        } else if (isPrivilegedAccount()) {
+            wkVBinding.groupOwnerTransferLayout.setVisibility(View.VISIBLE);
         } else wkVBinding.groupOwnerTransferLayout.setVisibility(View.GONE);
         adapter.setMyRoleInGroup(myRoleInGroup);
         adapter.setList(tempList);
+    }
+
+    private boolean isPrivilegedAccount() {
+        String loginUID = WKConfig.getInstance().getUid();
+        if (TextUtils.isEmpty(loginUID)) {
+            return false;
+        }
+        WKChannel me = WKIM.getInstance().getChannelManager().getChannel(loginUID, WKChannelType.PERSONAL);
+        if (me == null || TextUtils.isEmpty(me.category)) {
+            return false;
+        }
+        return WKSystemAccount.accountCategorySystem.equals(me.category)
+                || WKSystemAccount.accountCategoryCustomerService.equals(me.category);
     }
 
     @Override

@@ -419,4 +419,18 @@ public class GroupModel extends WKBaseModel {
         });
     }
 
+    public void disbandGroup(String groupNo, final ICommonListener iCommonListener) {
+        request(createService(GroupService.class).disbandGroup(groupNo), new IRequestResultListener<>() {
+            @Override
+            public void onSuccess(CommonResponse result) {
+                iCommonListener.onResult(HttpResponseCode.success, result.msg);
+            }
+
+            @Override
+            public void onFail(int code, String msg) {
+                iCommonListener.onResult(code, msg);
+            }
+        });
+    }
+
 }

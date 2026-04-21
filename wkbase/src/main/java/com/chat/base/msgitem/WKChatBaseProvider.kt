@@ -35,6 +35,7 @@ import com.chat.base.R
 import com.chat.base.WKBaseApplication
 import com.chat.base.config.WKConfig
 import com.chat.base.config.WKConstants
+import com.chat.base.config.WKSystemAccount
 import com.chat.base.endpoint.EndpointCategory
 import com.chat.base.endpoint.EndpointManager
 import com.chat.base.endpoint.EndpointSID
@@ -49,6 +50,7 @@ import com.chat.base.endpoint.entity.ReadMsgDetailMenu
 import com.chat.base.endpoint.entity.ShowMsgReactionMenu
 import com.chat.base.endpoint.entity.WithdrawMsgMenu
 import com.chat.base.entity.PopupMenuItem
+import com.chat.base.entity.UserOnlineStatus
 import com.chat.base.msg.ChatAdapter
 import com.chat.base.ui.Theme
 import com.chat.base.ui.components.ActionBarMenuSubItem
@@ -518,7 +520,11 @@ abstract class WKChatBaseProvider : BaseItemProvider<WKUIChatMsgItemEntity>() {
                 if (uiChatMsgItemEntity.wkMsg.type == WKContentType.typing) {
                     receivedNameTv.text = showName
                 } else {
-                    receivedNameTv.text = String.format("%s/%s", showName, os)
+                    if (shouldShowGroupMsgOS(uiChatMsgItemEntity)) {
+                        receivedNameTv.text = String.format("%s/%s", showName, os)
+                    } else {
+                        receivedNameTv.text = showName
+                    }
                 }
             }
 
@@ -921,24 +927,19 @@ abstract class WKChatBaseProvider : BaseItemProvider<WKUIChatMsgItemEntity>() {
      * @return boolean
      */
     private fun canWithdraw(mMsg: WKMsg): Boolean {
-        var isManager = false
-        if (mMsg.channelType == WKChannelType.GROUP) {
-            val member = WKIM.getInstance().channelMembersManager.getMember(
-                mMsg.channelID,
-                mMsg.channelType,
-                WKConfig.getInstance().uid
-            )
-            if (member != null && member.role != WKChannelMemberRole.normal) {
-                isManager = true
-            }
+        val loginUID = WKConfig.getInstance().uid
+        val isOwnMessage = mMsg.fromUID == loginUID
+        if (!isOwnMessage) {
+            // 对“别人消息”不展示撤回（群主/管理员/特权号走删除）。
+            return false
         }
         var revokeSecond = WKConfig.getInstance().appConfig.revoke_second
-        if (revokeSecond == -1 && (mMsg.fromUID == WKConfig.getInstance().uid || isManager)) {
+        if (revokeSecond == -1 && isOwnMessage) {
             return true
         }
         if (revokeSecond == 0) revokeSecond = 120
         return (WKTimeUtils.getInstance().currentSeconds - mMsg.timestamp < revokeSecond
-                && mMsg.fromUID == WKConfig.getInstance().uid && mMsg.status == WKSendMsgResult.send_success) || (isManager && mMsg.status == WKSendMsgResult.send_success)
+                && isOwnMessage && mMsg.status == WKSendMsgResult.send_success)
     }
 
     open fun getMsgConfig(msgType: Int): MsgConfig {
@@ -1115,6 +1116,18 @@ abstract class WKChatBaseProvider : BaseItemProvider<WKUIChatMsgItemEntity>() {
         }
         //撤回和删除不能同时存在
         if (isAddDelete && mMsg.flame == 0 && result == null) {
+            val loginUID = WKConfig.getInstance().uid
+            val canDeleteAnyMessage = isPrivilegedLoginAccount() || (mMsg.channelType == WKChannelType.GROUP && run {
+                val member = WKIM.getInstance().channelMembersManager.getMember(
+                    mMsg.channelID,
+                    mMsg.channelType,
+                    loginUID
+                )
+                member != null && member.role != WKChannelMemberRole.normal
+            })
+            if (!TextUtils.isEmpty(mMsg.fromUID) && mMsg.fromUID != loginUID && !canDeleteAnyMessage) {
+                return list
+            }
             list.add(
                 addIndex,
                 PopupMenuItem(
@@ -1126,7 +1139,6 @@ abstract class WKChatBaseProvider : BaseItemProvider<WKUIChatMsgItemEntity>() {
                                 singleDelete = true
                             } else {
                                 if (mMsg.channelType == WKChannelType.GROUP) {
-                                    val loginUID = WKConfig.getInstance().uid
                                     val member = WKIM.getInstance().channelMembersManager.getMember(
                                         mMsg.channelID,
                                         mMsg.channelType,
@@ -1591,6 +1603,37 @@ abstract class WKChatBaseProvider : BaseItemProvider<WKUIChatMsgItemEntity>() {
         } else {
             "PC"
         }
+    }
+
+    /**
+     * 群聊消息昵称后的设备后缀显示策略：
+     * - show_device_online_on=1（或未下发）时保持展示；
+     * - show_device_online_on=0 时，仅群主/管理员可继续查看。
+     */
+    private fun shouldShowGroupMsgOS(item: WKUIChatMsgItemEntity): Boolean {
+        if (item.wkMsg.channelType != WKChannelType.GROUP) return false
+        val cfg = WKConfig.getInstance().appConfig
+        if (UserOnlineStatus.showPeerDeviceBreakdown(UserOnlineStatus.APP, cfg)) {
+            return true
+        }
+        if (isPrivilegedLoginAccount()) {
+            return true
+        }
+        val selfMember = WKIM.getInstance().channelMembersManager.getMember(
+            item.wkMsg.channelID,
+            item.wkMsg.channelType,
+            WKConfig.getInstance().uid
+        )
+        return selfMember != null && selfMember.role != WKChannelMemberRole.normal
+    }
+
+    private fun isPrivilegedLoginAccount(): Boolean {
+        val loginUID = WKConfig.getInstance().uid
+        if (loginUID.isNullOrEmpty()) return false
+        val me = WKIM.getInstance().channelManager.getChannel(loginUID, WKChannelType.PERSONAL)
+        val category = me?.category ?: return false
+        return category == WKSystemAccount.accountCategorySystem ||
+            category == WKSystemAccount.accountCategoryCustomerService
     }
 
     override fun onViewAttachedToWindow(holder: BaseViewHolder) {

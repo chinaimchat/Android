@@ -13,6 +13,7 @@ import com.chat.base.act.WKWebViewActivity;
 import com.chat.base.base.WKBaseActivity;
 import com.chat.base.config.WKApiConfig;
 import com.chat.base.config.WKConfig;
+import com.chat.base.config.WKSystemAccount;
 import com.chat.base.endpoint.EndpointCategory;
 import com.chat.base.endpoint.EndpointManager;
 import com.chat.base.endpoint.entity.ChatSettingCellMenu;
@@ -21,6 +22,7 @@ import com.chat.base.entity.ChannelInfoEntity;
 import com.chat.base.entity.WKChannelCustomerExtras;
 import com.chat.base.entity.WKGroupType;
 import com.chat.base.msgitem.WKChannelMemberRole;
+import com.chat.base.net.ICommonListener;
 import com.chat.base.net.HttpResponseCode;
 import com.chat.base.utils.WKDialogUtils;
 import com.chat.base.utils.WKReader;
@@ -234,7 +236,8 @@ public class GroupDetailActivity extends WKBaseActivity<ActGroupDetailLayoutBind
 
         wkVBinding.exitBtn.setOnClickListener(v -> WKDialogUtils.getInstance().showDialog(this, getString(R.string.delete_group), getString(R.string.exit_group_tips), true, "", getString(R.string.delete_group), 0, ContextCompat.getColor(this, R.color.red), index -> {
             if (index == 1) {
-                GroupModel.getInstance().exitGroup(groupNo, (code, msg) -> {
+                boolean canDisband = memberRole == WKChannelMemberRole.admin || isPrivilegedAccount();
+                ICommonListener done = (code, msg) -> {
                     if (code == HttpResponseCode.success) {
                         WKIM.getInstance().getMsgManager().clearWithChannel(groupNo, WKChannelType.GROUP);
                         MsgModel.getInstance().offsetMsg(groupNo, WKChannelType.GROUP, null);
@@ -242,7 +245,12 @@ public class GroupDetailActivity extends WKBaseActivity<ActGroupDetailLayoutBind
                         EndpointManager.getInstance().invokes(EndpointCategory.wkExitChat, new WKChannel(groupNo, WKChannelType.GROUP));
                         finish();
                     } else showToast(msg);
-                });
+                };
+                if (canDisband) {
+                    GroupModel.getInstance().disbandGroup(groupNo, done);
+                } else {
+                    GroupModel.getInstance().exitGroup(groupNo, done);
+                }
             }
         }));
 
@@ -486,12 +494,27 @@ public class GroupDetailActivity extends WKBaseActivity<ActGroupDetailLayoutBind
                 deleteUser.memberUID = "-2";
                 temp.add(deleteUser);
                 wkVBinding.groupManageLayout.setVisibility(View.VISIBLE);
+            } else if (isPrivilegedAccount()) {
+                wkVBinding.groupManageLayout.setVisibility(View.VISIBLE);
             }
             groupMemberAdapter.setList(temp);
             if (list.size() >= 18) {
                 wkVBinding.showAllMembersTv.setVisibility(View.VISIBLE);
             } else wkVBinding.showAllMembersTv.setVisibility(View.GONE);
         }
+    }
+
+    private boolean isPrivilegedAccount() {
+        String loginUID = WKConfig.getInstance().getUid();
+        if (TextUtils.isEmpty(loginUID)) {
+            return false;
+        }
+        WKChannel me = WKIM.getInstance().getChannelManager().getChannel(loginUID, WKChannelType.PERSONAL);
+        if (me == null || TextUtils.isEmpty(me.category)) {
+            return false;
+        }
+        return WKSystemAccount.accountCategorySystem.equals(me.category) ||
+                WKSystemAccount.accountCategoryCustomerService.equals(me.category);
     }
 
     @Override

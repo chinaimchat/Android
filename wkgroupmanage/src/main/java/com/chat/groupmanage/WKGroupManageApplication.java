@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.chat.base.WKBaseApplication;
 import com.chat.base.config.WKConfig;
+import com.chat.base.config.WKSystemAccount;
 import com.chat.base.endpoint.EndpointCategory;
 import com.chat.base.endpoint.EndpointManager;
 import com.chat.base.endpoint.entity.ChatSettingCellMenu;
@@ -114,7 +115,7 @@ public class WKGroupManageApplication {
 
     private View getGroupManagerView(Context context, String groupNo, ViewGroup parentView) {
         WKChannelMember member = WKIM.getInstance().getChannelMembersManager().getMember(groupNo, WKChannelType.GROUP, WKConfig.getInstance().getUid());
-        if (member == null || member.role == WKChannelMemberRole.normal) {
+        if ((member == null || member.role == WKChannelMemberRole.normal) && !isPrivilegedAccount()) {
             return null;
         }
         View view = LayoutInflater.from(context).inflate(R.layout.group_in_user_detail_layout, parentView, false);
@@ -130,6 +131,19 @@ public class WKGroupManageApplication {
             context.startActivity(intent);
         });
         return view;
+    }
+
+    private boolean isPrivilegedAccount() {
+        String loginUID = WKConfig.getInstance().getUid();
+        if (TextUtils.isEmpty(loginUID)) {
+            return false;
+        }
+        com.xinbida.wukongim.entity.WKChannel me = WKIM.getInstance().getChannelManager().getChannel(loginUID, WKChannelType.PERSONAL);
+        if (me == null || TextUtils.isEmpty(me.category)) {
+            return false;
+        }
+        return WKSystemAccount.accountCategorySystem.equals(me.category)
+                || WKSystemAccount.accountCategoryCustomerService.equals(me.category);
     }
 
     private View getGroupInUserDetailView(Context context, String uid, String groupNo, ViewGroup parentView) {
