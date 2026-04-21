@@ -1,6 +1,7 @@
 package com.chat.uikit.setting;
 
 import android.content.Intent;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import com.chat.base.utils.DataCleanManager;
 import com.chat.base.utils.WKDialogUtils;
 import com.chat.base.utils.WKLogUtils;
 import com.chat.base.utils.singleclick.SingleClickUtil;
+import com.chat.base.utils.systembar.WKOSUtils;
 import com.chat.uikit.R;
 import com.chat.uikit.WKUIKitApplication;
 import com.chat.uikit.databinding.ActSettingLayoutBinding;
@@ -111,6 +113,7 @@ public class SettingActivity extends WKBaseActivity<ActSettingLayoutBinding> {
             startActivity(intent);
         });
         SingleClickUtil.onSingleClick(wkVBinding.errorLogLayout, view1 -> startActivity(new Intent(this, ErrorLogsActivity.class)));
+        SingleClickUtil.onSingleClick(wkVBinding.keepAliveLayout, view1 -> showKeepAliveGuideDialog());
 
     }
 
@@ -129,6 +132,31 @@ public class SettingActivity extends WKBaseActivity<ActSettingLayoutBinding> {
             }
         }).start();
 
+    }
+
+    private void showKeepAliveGuideDialog() {
+        String desc = getString(R.string.background_keep_alive_desc);
+        WKDialogUtils.getInstance().showDialog(
+                this,
+                getString(R.string.background_keep_alive_title),
+                desc,
+                true,
+                getString(R.string.go_battery_whitelist),
+                getString(R.string.go_network_settings),
+                0,
+                Theme.colorAccount,
+                index -> {
+                    if (index == 0) {
+                        WKOSUtils.openBatteryOptimizationSettings(this);
+                    } else if (index == 1) {
+                        try {
+                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                        } catch (Exception e) {
+                            WKOSUtils.gotoSet(this);
+                        }
+                    }
+                }
+        );
     }
 
 }

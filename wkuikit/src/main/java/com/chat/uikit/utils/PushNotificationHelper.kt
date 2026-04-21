@@ -15,18 +15,19 @@ import com.chat.uikit.TabActivity
 import com.chat.uikit.chat.manager.WKIMUtils
 
 object PushNotificationHelper {
+    // 使用独立的新渠道 ID，规避旧渠道被系统/历史配置静音后无法代码覆盖的问题。
+    private const val NEW_MSG_BACKGROUND_SOUND_CHANNEL_ID = "wk_new_msg_notification_sound_v1"
 
-    /** 应用前台内的聊天消息通知，避免过强打断。 */
+    /** 应用前台内的聊天消息通知。 */
     private val MESSAGE_IN_APP = NotificationCompatUtil.Channel(
         channelId = WKConstants.newMsgInAppChannelID,
         name = WKBaseApplication.getInstance().context.getString(R.string.new_msg_notification),
-        importance = NotificationManager.IMPORTANCE_DEFAULT,
-        sound = Uri.parse("android.resource://" + WKBaseApplication.getInstance().context.packageName + "/" + R.raw.newmsg)
+        importance = NotificationManager.IMPORTANCE_DEFAULT
     )
 
     /** 应用退到桌面后台后，使用高优先级横幅通知。 */
     private val MESSAGE_BACKGROUND = NotificationCompatUtil.Channel(
-        channelId = WKConstants.newMsgChannelID,
+        channelId = NEW_MSG_BACKGROUND_SOUND_CHANNEL_ID,
         name = WKBaseApplication.getInstance().context.getString(R.string.new_msg_notification),
         importance = NotificationManager.IMPORTANCE_HIGH,
         lockScreenVisibility = NotificationCompat.VISIBILITY_PUBLIC,
@@ -66,6 +67,43 @@ object PushNotificationHelper {
      * @param channelId 会话 channel id
      * @param channelType 会话类型（单聊/群等）
      */
+    /**
+     * 离线推送（FCM/HMS/小米/OPPO 等 data）：始终使用高重要性渠道，保证 heads-up/横幅，不依赖厂商系统 notification。
+     * @param notifyTag 与服务端 notify_id 一致，用于 setGroup 折叠同一会话
+     */
+    fun notifyOfflinePush(
+        context: Context,
+        id: Int,
+        notifyTag: String?,
+        title: String?,
+        text: String?,
+        channelId: String,
+        channelType: Byte
+    ) {
+        val chatIntent = WKIMUtils.getInstance().buildChatIntentForNotification(context, channelId, channelType)
+        val intent = NotifyRelayActivity.relayIntent(context, chatIntent)
+        val builder = NotificationCompatUtil.createNotificationBuilder(
+            context,
+            MESSAGE_BACKGROUND,
+            title,
+            text,
+            intent
+        )
+        // 后台离线推送要每条都可提示声音，不能只在首次出现时响铃。
+        builder.setOnlyAlertOnce(false)
+        builder.setStyle(
+            NotificationCompat.BigTextStyle()
+                .bigText(text)
+        )
+        builder.setCategory(NotificationCompat.CATEGORY_MESSAGE)
+        val notification = buildDefaultConfig(builder)
+        if (!notifyTag.isNullOrEmpty()) {
+            NotificationCompatUtil.notify(context, notifyTag, id, notification)
+        } else {
+            NotificationCompatUtil.notify(context, id, notification)
+        }
+    }
+
     fun notifyMessage(
         context: Context,
         id: Int,
@@ -76,11 +114,8 @@ object PushNotificationHelper {
     ) {
         val chatIntent = WKIMUtils.getInstance().buildChatIntentForNotification(context, channelId, channelType)
         val intent = NotifyRelayActivity.relayIntent(context, chatIntent)
-        val notifChannel = if (com.chat.uikit.WKUIKitApplication.getInstance().isAppInForeground()) {
-            MESSAGE_IN_APP
-        } else {
-            MESSAGE_BACKGROUND
-        }
+        // 组织内强提醒模式：前后台统一走高优先级有声渠道，确保每条消息都可弹窗提示。
+        val notifChannel = MESSAGE_BACKGROUND
 
         val builder = NotificationCompatUtil.createNotificationBuilder(
             context,
@@ -89,6 +124,8 @@ object PushNotificationHelper {
             text,
             intent
         )
+        // 每条都允许提示音/横幅，避免同会话更新时不再响铃。
+        builder.setOnlyAlertOnce(false)
 
         // 默认情况下，通知的文字内容会被截断以放在一行。如果您想要更长的通知，可以使用 setStyle() 添加样式模板来启用可展开的通知。
         builder.setStyle(

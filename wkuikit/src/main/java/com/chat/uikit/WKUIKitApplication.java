@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -24,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -68,11 +70,9 @@ import com.chat.base.msgitem.WKMsgItemViewManager;
 import com.chat.base.net.HttpResponseCode;
 import com.chat.base.ui.components.AlertDialog;
 import com.chat.base.ui.components.AvatarView;
-import com.chat.base.ui.components.SwitchView;
 import com.chat.base.utils.ActManagerUtils;
 import com.chat.base.utils.ImageUtils;
 import com.chat.base.utils.LayoutHelper;
-import com.chat.base.utils.WKBatteryOptimizationHelper;
 import com.chat.base.utils.WKDeviceUtils;
 import com.chat.base.utils.WKFileUtils;
 import com.chat.base.utils.WKMediaFileUtils;
@@ -105,8 +105,9 @@ import com.chat.uikit.message.MsgModel;
 import com.chat.uikit.search.AddFriendsActivity;
 import com.chat.uikit.setting.MsgNoticesSettingActivity;
 import com.chat.uikit.setting.SettingActivity;
-import com.chat.uikit.user.MyInviteCodeActivity;
 import com.chat.uikit.user.UserDetailActivity;
+import com.chat.uikit.utils.PushNotifyDedupHelper;
+import com.chat.uikit.utils.PushNotificationHelper;
 import com.xinbida.wukongim.WKIM;
 import com.xinbida.wukongim.entity.WKChannel;
 import com.xinbida.wukongim.entity.WKChannelType;
@@ -122,6 +123,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -169,7 +171,6 @@ public class WKUIKitApplication {
         this.appInForeground = appInForeground;
     }
 
-
     public void initIM() {
         if (!TextUtils.isEmpty(WKConfig.getInstance().getToken())) {
             //设置开发模式
@@ -210,21 +211,90 @@ public class WKUIKitApplication {
             }
             return null;
         });
-        EndpointManager.getInstance().setMethod("show_keep_alive_item", object -> {
-            if (!(object instanceof Context)) {
+        // 离线推送：data/透传统一由 wkpush 解析后调用，此处仅负责本地 Notification（不依赖各厂商系统栏）
+        EndpointManager.getInstance().setMethod("wk_offline_push_notify", object -> {
+            if (!(object instanceof Map)) {
                 return null;
             }
-            Context ctx = (Context) object;
-            View v = LayoutInflater.from(ctx).inflate(R.layout.wk_keep_alive_settings_section, null);
-            SwitchView sw = v.findViewById(R.id.imFgsSwitch);
-            TextView batteryDesc = v.findViewById(R.id.batteryRowDesc);
-            boolean on = WKSharedPreferencesUtil.getInstance().getBoolean(ImConnectionForegroundController.PREF_IM_FGS_KEEP_ALIVE, true);
-            sw.setChecked(on);
-            sw.setOnCheckedChangeListener((view, checked) ->
-                    WKSharedPreferencesUtil.getInstance().putBoolean(ImConnectionForegroundController.PREF_IM_FGS_KEEP_ALIVE, checked));
-            batteryDesc.setText(ctx.getString(R.string.battery_opt_row_desc, ctx.getString(com.chat.base.R.string.app_name)));
-            v.findViewById(R.id.batteryRow).setOnClickListener(v1 -> WKBatteryOptimizationHelper.openAppDetailSettings(ctx));
-            return v;
+            @SuppressWarnings("unchecked")
+            Map<String, String> data = (Map<String, String>) object;
+            Context ctx = mContext.get();
+            if (ctx == null) {
+                return null;
+            }
+            // App 前台时不展示系统通知，避免在聊天页面被通知栏打断。
+            if (isAppInForeground()) {
+                return null;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    return null;
+                }
+            } else if (!NotificationManagerCompat.from(ctx).areNotificationsEnabled()) {
+                return null;
+            }
+            String channelId = data.get("channel_id");
+            if (TextUtils.isEmpty(channelId)) {
+                return null;
+            }
+            String channelTypeStr = data.get("channel_type");
+            byte channelType = 1;
+            if (!TextUtils.isEmpty(channelTypeStr)) {
+                try {
+                    channelType = Byte.parseByte(channelTypeStr.trim());
+                } catch (NumberFormatException ignored) {
+                    channelType = 1;
+                }
+            }
+            String title = data.get("title");
+            String body = data.get("body");
+            if (TextUtils.isEmpty(body)) {
+                com.xinbida.wukongim.entity.WKConversationMsg conversationMsg =
+                        WKIM.getInstance().getConversationManager().getWithChannel(channelId, channelType);
+                if (conversationMsg != null && !TextUtils.isEmpty(conversationMsg.lastClientMsgNO)) {
+                    WKMsg latestMsg = WKIM.getInstance().getMsgManager().getWithClientMsgNO(conversationMsg.lastClientMsgNO);
+                    if (latestMsg != null
+                            && latestMsg.baseContentMsgModel != null
+                            && !TextUtils.isEmpty(latestMsg.baseContentMsgModel.getDisplayContent())) {
+                        body = latestMsg.baseContentMsgModel.getDisplayContent();
+                    }
+                }
+            }
+            if (TextUtils.isEmpty(body)) {
+                body = WKBaseApplication.getInstance().getContext().getString(R.string.default_new_msg);
+            }
+            if (TextUtils.isEmpty(title)) {
+                WKChannel channel = WKIM.getInstance().getChannelManager().getChannel(channelId, channelType);
+                if (channel != null) {
+                    title = TextUtils.isEmpty(channel.channelRemark) ? channel.channelName : channel.channelRemark;
+                }
+            }
+            if (TextUtils.isEmpty(title)) {
+                title = body;
+            }
+            String notifyIdStr = data.get("notify_id");
+            long messageSeq = 0;
+            String messageSeqStr = data.get("message_seq");
+            if (!TextUtils.isEmpty(messageSeqStr)) {
+                try {
+                    messageSeq = Long.parseLong(messageSeqStr);
+                } catch (NumberFormatException ignored) {
+                    messageSeq = 0;
+                }
+            }
+            if (!PushNotifyDedupHelper.shouldNotify(channelId, channelType, messageSeq, notifyIdStr)) {
+                return null;
+            }
+            int nid = Math.abs((notifyIdStr != null ? notifyIdStr : channelId).hashCode());
+            if (!TextUtils.isEmpty(notifyIdStr)) {
+                try {
+                    long parsed = Long.parseLong(notifyIdStr);
+                    nid = (int) (parsed % Integer.MAX_VALUE);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            PushNotificationHelper.INSTANCE.notifyOfflinePush(ctx, nid, notifyIdStr, title, body, channelId, channelType);
+            return null;
         });
         // 注册消息model到sdk
         WKIM.getInstance().getMsgManager().registerContentMsg(WKCardContent.class);
@@ -278,12 +348,7 @@ public class WKUIKitApplication {
             intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
             mContext.get().startActivity(intent);
         }));
-        EndpointManager.getInstance().setMethod("personal_center_invite_code", EndpointCategory.personalCenter, 3, object -> new PersonalInfoMenu("invite_code", R.mipmap.menu_invite, mContext.get().getString(R.string.my_invite_code), () -> {
-            Intent intent = new Intent(mContext.get(), MyInviteCodeActivity.class);
-            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            mContext.get().startActivity(intent);
-        }));
-        EndpointManager.getInstance().setMethod("personal_center_new_msg_notice", EndpointCategory.personalCenter, 4, object -> new PersonalInfoMenu(R.mipmap.icon_notice, mContext.get().getString(R.string.new_msg_notice), 0, () -> {
+        EndpointManager.getInstance().setMethod("personal_center_new_msg_notice", EndpointCategory.personalCenter, 3, object -> new PersonalInfoMenu(R.mipmap.icon_notice, mContext.get().getString(R.string.new_msg_notice), 0, () -> {
             Intent intent = new Intent(mContext.get(), MsgNoticesSettingActivity.class);
             intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
             mContext.get().startActivity(intent);
@@ -469,7 +534,6 @@ public class WKUIKitApplication {
         });
         //监听登录状态
         EndpointManager.getInstance().setMethod("", EndpointCategory.loginMenus, object -> new LoginMenu(() -> {
-            Log.e("接受登录", "-->3");
             WKSharedPreferencesUtil.getInstance().putInt("wk_lock_screen_pwd_count", 5);
             WKSharedPreferencesUtil.getInstance().putBoolean("sync_friend", true);
             //初始化im
@@ -588,10 +652,11 @@ public class WKUIKitApplication {
     private List<WKMessageContent> messageContentList;
 
     public void exitLogin(int from) {
-        if (mContext.get() != null) {
-            ImConnectionForegroundController.stop(mContext.get());
-        }
         MsgModel.getInstance().stopTimer();
+        Context ctx = getContext();
+        if (ctx != null) {
+            ImConnectionForegroundController.stop(ctx);
+        }
         EndpointManager.getInstance().invoke("wk_logout", null);
         WKConfig.getInstance().clearInfo();
         EndpointManager.getInstance().invoke("wk_wallet_logout_cleanup", null);

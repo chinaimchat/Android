@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">AI抖商学院</string>
     <string name="sync_msg">收取中…</string>
     <string name="connecting">连接中</string>
     <string name="not_connected">未连接</string>
@@ -153,9 +152,6 @@
     <string name="dark_save_tips">新的设置需要重启%s才能生效</string>
 
     <string name="input_apply_remark">请输入申请备注</string>
-    <string name="agree_friend_title">同意加好友</string>
-    <string name="agree_friend_message">可填写向对方展示的自我介绍，不填则使用默认</string>
-    <string name="agree_friend_hint">自我介绍（选填）</string>
     <string name="source_from">来源</string>
     <string name="source_from_unknown">未知</string>
     <string name="user_detail_info">资料设置</string>
@@ -261,6 +257,16 @@
     <string name="choose_module">企业版模块</string>
     <string name="third_party_sharing_list">第三方信息共享清单</string>
     <string name="error_data">开发日志</string>
+    <string name="background_keep_alive">后台保活设置</string>
+    <string name="background_keep_alive_title">后台保活引导</string>
+    <string name="background_keep_alive_desc">为减少后台掉线，请完成以下设置：\n1. 将当前应用加入电池优化白名单（不受限制）；\n2. 打开系统网络设置，确保后台网络可用（Wi-Fi/移动数据）；\n3. 在应用详情页确认“后台活动/自启动”已允许。</string>
+    <string name="go_battery_whitelist">电池白名单</string>
+    <string name="go_network_settings">网络设置</string>
+    <string name="go_app_details">应用详情</string>
+    <string name="im_fgs_channel_name">消息连接服务</string>
+    <string name="im_fgs_channel_desc">保持即时消息连接</string>
+    <string name="im_fgs_notification_title">消息服务运行中</string>
+    <string name="im_fgs_notification_text">正在保持与服务器同步，以接收新消息</string>
     <string name="call_blacklist_group">您已被拉入群黑名单，无法音视频聊天</string>
     <string name="save_label_tips">存为标签，下次可直接使用</string>
     <string name="save_label_sure">存为标签</string>
@@ -285,7 +291,7 @@
     <string name="tab_text_chat">聊天</string>
     <string name="chat_page_title"></string>
     <string name="tab_text_contacts">联系人</string>
-    <string name="tab_text_workplace">发现</string>
+    <string name="tab_text_workplace">工作台</string>
     <string name="tab_text_me">我的</string>
     <string name="invitation_sent">邀请已发送</string>
     <string name="find_chat_content">查找聊天记录</string>
@@ -304,17 +310,5 @@
     <string name="uikit_search_for_date">日期</string>
     <string name="uikit_go_to_chat_item">定位到聊天</string>
     <string name="uikit_search_for_image">图片</string>
-    <string name="my_invite_code">我的邀请码</string>
-    <string name="invite_enable">启用</string>
-    <string name="invite_disable">禁用</string>
-    <string name="keep_alive_section_title">后台连接与省电</string>
-    <string name="im_fgs_switch_title">后台保持消息连接</string>
-    <string name="im_fgs_switch_desc">开启后退回桌面会显示常驻通知，并以前台服务方式提高 IM 长连存活概率（受系统与厂商策略影响，仍非 100%）。</string>
-    <string name="battery_opt_row_title">应用省电与后台限制</string>
-    <string name="battery_opt_row_desc">若收消息不稳定，可在系统设置中为 %s 关闭电池优化或允许后台运行（各厂商名称不同）。</string>
-    <string name="im_fgs_channel_name">消息连接服务</string>
-    <string name="im_fgs_channel_desc">保持即时消息连接</string>
-    <string name="im_fgs_notification_title">消息服务运行中</string>
-    <string name="im_fgs_notification_text">正在保持与服务器同步，以接收新消息</string>
 </resources>
 

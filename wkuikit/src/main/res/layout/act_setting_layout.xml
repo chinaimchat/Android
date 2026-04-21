@@ -213,6 +213,18 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/keepAliveLayout"
+                        style="@style/layoutBg">
+
+                        <TextView
+                            style="@style/leftTextView"
+                            android:text="@string/background_keep_alive" />
+
+                        <androidx.appcompat.widget.AppCompatImageView style="@style/arrow_right_iv" />
+
+                    </LinearLayout>
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="10dp"

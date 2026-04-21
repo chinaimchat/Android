@@ -45,6 +45,7 @@ import com.chat.uikit.message.MsgModel;
 import com.chat.uikit.search.SearchUserActivity;
 import com.chat.uikit.user.UserDetailActivity;
 import com.chat.uikit.user.service.UserModel;
+import com.chat.uikit.utils.PushNotifyDedupHelper;
 import com.chat.uikit.utils.PushNotificationHelper;
 import com.xinbida.wukongim.WKIM;
 import com.xinbida.wukongim.entity.WKCMDKeys;
@@ -71,7 +72,6 @@ import java.util.UUID;
  * im监听相关处理
  */
 public class WKIMUtils {
-    private boolean imListenerInitialized = false;
 
     private WKIMUtils() {
     }
@@ -88,10 +88,6 @@ public class WKIMUtils {
      * 初始化事件
      */
     public void initIMListener() {
-        if (imListenerInitialized) {
-            return;
-        }
-        imListenerInitialized = true;
         EndpointManager.getInstance().setMethod("show_rtc_notification", object -> {
             if (object instanceof String fromUID) {
                 WKChannel channel = WKIM.getInstance().getChannelManager().getChannel(fromUID, WKChannelType.PERSONAL);
@@ -331,32 +327,6 @@ public class WKIMUtils {
                                 }
                             }
                         }
-                    }
-                    case WKCMDKeys.wk_userAvatarUpdate -> {
-                        if (cmd.paramJsonObject == null) {
-                            return;
-                        }
-                        String avatarUid = cmd.paramJsonObject.optString("uid");
-                        if (TextUtils.isEmpty(avatarUid)) {
-                            return;
-                        }
-                        AvatarView.clearCache(avatarUid, WKChannelType.PERSONAL);
-                        String personalKey = UUID.randomUUID().toString().replace("-", "");
-                        WKIM.getInstance().getChannelManager().updateAvatarCacheKey(avatarUid, WKChannelType.PERSONAL, personalKey);
-                        WKIM.getInstance().getChannelManager().fetchChannelInfo(avatarUid, WKChannelType.PERSONAL);
-                    }
-                    case WKCMDKeys.wk_groupAvatarUpdate -> {
-                        if (cmd.paramJsonObject == null) {
-                            return;
-                        }
-                        String avatarGroupNo = cmd.paramJsonObject.optString("group_no");
-                        if (TextUtils.isEmpty(avatarGroupNo)) {
-                            return;
-                        }
-                        AvatarView.clearCache(avatarGroupNo, WKChannelType.GROUP);
-                        String groupKey = UUID.randomUUID().toString().replace("-", "");
-                        WKIM.getInstance().getChannelManager().updateAvatarCacheKey(avatarGroupNo, WKChannelType.GROUP, groupKey);
-                        WKIM.getInstance().getChannelManager().fetchChannelInfo(avatarGroupNo, WKChannelType.GROUP);
                     }
                     case WKCMDKeys.wk_sync_reminders -> MsgModel.getInstance().syncReminder();
                     case WKCMDKeys.wk_sync_conversation_extra ->
@@ -657,13 +627,21 @@ public class WKIMUtils {
         if (msgNotice == 0) {
             return;
         }
+        String fallbackMsgId = !TextUtils.isEmpty(msg.clientMsgNO) ? msg.clientMsgNO : msg.messageID;
+        if (!PushNotifyDedupHelper.shouldNotify(channel.channelID, channel.channelType, msg.messageSeq, fallbackMsgId)) {
+            return;
+        }
 //        Activity activity = ActManagerUtils.getInstance().getCurrentActivity();
 //        if (activity == null || activity.getComponentName().getClassName().equals(TabActivity.class.getName())) {
-        if (playNewMsgMedia) {
-            defaultMediaPlayer();
-        }
-        if (isVibrate) {
-            vibrate();
+        boolean isForeground = WKUIKitApplication.getInstance().isAppInForeground();
+        if (isForeground) {
+            if (playNewMsgMedia) {
+                defaultMediaPlayer();
+            }
+            if (isVibrate) {
+                vibrate();
+            }
+            return;
         }
 //            return;
 //        }
@@ -682,7 +660,13 @@ public class WKIMUtils {
 //        if (isVibrate) {
 //            PushNotificationHelper.INSTANCE.notifyMention(WKUIKitApplication.getInstance().getContext(), 1, showTitle, showContent);
 //        } else {
-        int notifyId = Math.abs(Objects.hash(channel.channelID, (int) channel.channelType));
+        // 每条消息独立通知 ID，确保每条都触发横幅/声音，而不是复用同一会话通知。
+        int notifyId;
+        if (msg.messageSeq > 0) {
+            notifyId = Math.abs(Objects.hash(channel.channelID, (int) channel.channelType, msg.messageSeq));
+        } else {
+            notifyId = Math.abs(Objects.hash(channel.channelID, (int) channel.channelType, fallbackMsgId));
+        }
         PushNotificationHelper.INSTANCE.notifyMessage(WKUIKitApplication.getInstance().getContext(), notifyId, showTitle, showContent, channel.channelID, channel.channelType);
 //        }
 //        showNotice(showTitle, finalShowContent, null, isVibrate);
@@ -703,7 +687,6 @@ public class WKIMUtils {
     public void removeListener() {
         WKIM.getInstance().getCMDManager().removeCmdListener("system");
         WKIM.getInstance().getMsgManager().removeNewMsgListener("system");
-        imListenerInitialized = false;
     }
 
 

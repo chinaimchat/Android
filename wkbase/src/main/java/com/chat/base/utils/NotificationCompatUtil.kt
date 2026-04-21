@@ -131,6 +131,18 @@ class NotificationCompatUtil {
         }
 
         /**
+         * 使用 tag + id 显示通知（与服务端 notify_id 对齐，便于会话级覆盖/折叠）。
+         */
+        fun notify(
+            context: Context,
+            tag: String,
+            id: Int,
+            notification: Notification?
+        ) {
+            notificationManager(context)?.notify(tag, id, notification)
+        }
+
+        /**
          * 取消通知
          * @param context 上下文
          * @param id      通知的唯一ID
