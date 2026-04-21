@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="50dp">
+                android:layout_marginTop="32dp">
 
                 <com.chat.base.ui.components.AvatarView
                     android:id="@+id/avatarView"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="24dp"
                 android:text="@string/wklogin_upload_header"
                 android:textColor="#ff999999"
                 android:textSize="12sp" />
@@ -99,14 +99,14 @@
 
                 <View
                     style="@style/view_line"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp" />
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/sureBtn"
                     style="@style/buttonNormal"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="60dp"
+                    android:layout_marginTop="32dp"
                     android:layout_marginEnd="20dp"
                     android:text="@string/wklogin_sure"
                     app:cornerRadius="@dimen/button_radian" />

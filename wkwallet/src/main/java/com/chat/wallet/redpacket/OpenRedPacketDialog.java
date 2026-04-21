@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,7 +57,11 @@ public class OpenRedPacketDialog extends Dialog {
         setContentView(R.layout.dialog_open_redpacket);
         if (getWindow() != null) {
             getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            getWindow().setDimAmount(0.45f);
         }
+        setCanceledOnTouchOutside(true);
+        findViewById(R.id.closeTv).setOnClickListener(v -> dismiss());
         ((TextView) findViewById(R.id.senderNameTv)).setText(senderName != null ? senderName + getContext().getString(R.string.wallet_redpacket_suffix) : getContext().getString(R.string.redpacket));
         ((TextView) findViewById(R.id.remarkTv)).setText(remark != null && !remark.isEmpty() ? remark : getContext().getString(R.string.redpacket_remark));
         View openBtn = findViewById(R.id.openBtn);

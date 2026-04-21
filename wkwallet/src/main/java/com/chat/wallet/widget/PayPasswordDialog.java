@@ -46,6 +46,12 @@ public class PayPasswordDialog extends Dialog {
             g.addView(tv);
         }
     }
-    private void upDots(){for(int i=0;i<6;i++)dots[i].setVisibility(i<password.length()?View.VISIBLE:View.INVISIBLE);}
+    private void upDots() {
+        for (int i = 0; i < 6; i++) {
+            dots[i].setBackgroundResource(i < password.length()
+                    ? R.drawable.bg_pay_password_dot
+                    : R.drawable.bg_pay_password_dot_empty);
+        }
+    }
     public void clearPassword(){password.setLength(0);upDots();}
 }

@@ -117,7 +117,7 @@ public class WalletActivity extends WKBaseActivity<ActivityWalletBinding> {
         });
 
         wkVBinding.quickRechargeLayout.setOnClickListener(v ->
-                RechargeDepositBottomSheet.show(this));
+                startActivity(new Intent(this, RechargeActivity.class)));
 
         wkVBinding.quickWithdrawLayout.setOnClickListener(v ->
                 startActivity(new Intent(this, WithdrawActivity.class)));

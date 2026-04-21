@@ -15,8 +15,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
+            android:maxLines="1"
             android:text="@string/waiting_answer"
             android:textColor="@color/white"
             android:textSize="18sp" />
@@ -26,7 +27,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="36dp"
             android:scaleType="centerCrop"
             android:src="#cccc" />
 
@@ -35,7 +36,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="slkdslkdskl"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -55,7 +58,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="28dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/other_members"
             android:textColor="#999"
             android:textSize="14sp" />
@@ -81,9 +86,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="36dp"
         android:gravity="center">
 
         <androidx.appcompat.widget.AppCompatImageView

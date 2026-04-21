@@ -30,8 +30,8 @@
         android:id="@+id/ivFlash"
         android:layout_width="30dp"
         android:layout_height="35dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="80dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="96dp"
         android:src="@mipmap/icon_torch" />
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -39,7 +39,7 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/shape_corner_rectangle"
         android:src="@mipmap/ic_ab_back" />
 
@@ -47,8 +47,8 @@
         android:id="@+id/rightIV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="30dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="15dp"
         android:background="@drawable/shape_corner_rectangle"
         android:src="@mipmap/ic_ab_other" />

@@ -6,9 +6,11 @@
     android:gravity="center">
 
     <LinearLayout
-        android:layout_width="292dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:elevation="12dp"
         android:orientation="vertical">
 
@@ -19,9 +21,21 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="72dp"
                 android:layout_gravity="top"
                 android:background="@drawable/bg_rp_qq_card_top_shine" />
+
+            <TextView
+                android:id="@+id/closeTv"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="end|top"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="×"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -40,18 +54,22 @@
                     android:shadowDx="0"
                     android:shadowDy="1"
                     android:shadowRadius="2"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/remarkTv"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:alpha="0.92"
+                    android:ellipsize="end"
                     android:gravity="center"
                     android:lineSpacingExtra="2dp"
+                    android:maxLines="3"
                     android:text="@string/redpacket_remark"
                     android:textColor="#FFFFFF"
                     android:textSize="15sp" />
@@ -61,19 +79,19 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-40dp">
+            android:layout_marginTop="-44dp">
 
             <TextView
                 android:id="@+id/openBtn"
-                android:layout_width="76dp"
-                android:layout_height="76dp"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/bg_open_redpacket_btn"
                 android:elevation="8dp"
                 android:gravity="center"
                 android:text="开"
                 android:textColor="@color/wallet_rp_qq_btn_text"
-                android:textSize="26sp"
+                android:textSize="28sp"
                 android:textStyle="bold" />
         </FrameLayout>
     </LinearLayout>

@@ -21,7 +21,9 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="70dp"
         android:layout_marginEnd="30dp"
+        android:ellipsize="end"
         android:gravity="center"
+        android:maxLines="1"
         android:text="@string/login_title"
         android:textColor="@color/colorDark"
         android:textSize="32sp"
@@ -37,14 +39,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp">
+            android:layout_marginEnd="20dp">
 
 
             <LinearLayout
                 android:id="@+id/chooseCodeTv"
-                android:layout_width="wrap_content"
+                android:layout_width="56dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical">
 
@@ -53,6 +55,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:text="@string/account_input_label"
                     android:textColor="@color/colorDark"
                     android:textSize="14sp" />
@@ -73,15 +77,18 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/nameEt"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:background="@color/transparent"
                 android:gravity="center_vertical"
                 android:hint="@string/hint_name"
                 android:inputType="phone"
                 android:maxLength="20"
+                android:maxLines="1"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
+                android:singleLine="true"
                 android:textColor="@color/colorDark"
                 android:textColorHint="@color/color999"
                 android:textSize="14sp"
@@ -91,15 +98,15 @@
 
         <View
             style="@style/view_line"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp" />
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatEditText
@@ -112,6 +119,8 @@
                 android:hint="@string/hint_pwd"
                 android:inputType="textPassword"
                 android:maxLength="20"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/colorDark"
                 android:textColorHint="@color/color999"
                 android:textSize="14sp"
@@ -150,9 +159,12 @@
 
             <TextView
                 android:id="@+id/myTv"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/sign_in_agree"
                 android:textSize="@dimen/font_size_14" />
 
@@ -179,9 +191,9 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/loginBtn"
             style="@style/buttonNormal"
-            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="50dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginEnd="30dp"
             android:text="@string/login"
             app:cornerRadius="@dimen/button_radian" />
 

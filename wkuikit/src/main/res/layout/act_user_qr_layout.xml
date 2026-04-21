@@ -38,17 +38,23 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
+                android:ellipsize="end"
                 android:gravity="center"
+                android:maxLines="1"
                 android:textColor="@color/colorDark"
                 android:textSize="16sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/qrIv"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
+                android:adjustViewBounds="true"
+                android:maxWidth="280dp"
+                android:maxHeight="280dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/default_view_bg" />
 
             <TextView

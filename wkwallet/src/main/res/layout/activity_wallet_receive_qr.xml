@@ -62,7 +62,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:ellipsize="end"
                         android:gravity="center"
+                        android:maxLines="1"
                         android:textColor="@color/buy_usdt_text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -90,8 +92,8 @@
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/walletReceiveQrIv"
-                            android:layout_width="240dp"
-                            android:layout_height="240dp"
+                            android:layout_width="220dp"
+                            android:layout_height="220dp"
                             android:layout_margin="12dp"
                             android:contentDescription="@string/wallet_receive_qr_title"
                             android:padding="4dp"

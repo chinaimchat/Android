@@ -8,8 +8,8 @@
 
     <org.webrtc.SurfaceViewRenderer
         android:id="@+id/surfaceView"
-        android:layout_width="80dp"
-        android:layout_height="180dp"
+        android:layout_width="96dp"
+        android:layout_height="168dp"
         android:visibility="gone" />
 
     <LinearLayout
@@ -34,7 +34,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
+            android:ellipsize="end"
             android:gravity="center"
+            android:maxLines="1"
             android:textColor="#1296db"
             android:textSize="16sp" />
 

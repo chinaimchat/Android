@@ -45,10 +45,13 @@
 
                         <TextView
                             android:id="@+id/nameTv"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="10dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:text="@string/group_name"
                             android:textColor="@color/colorDark"
                             android:textSize="16sp" />
@@ -65,9 +68,13 @@
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/qrIv"
-                            android:layout_width="250dp"
-                            android:layout_height="250dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:maxWidth="280dp"
+                            android:maxHeight="280dp"
+                            android:scaleType="fitCenter"
                             android:src="@mipmap/icon_no_qr" />
 
                         <TextView

@@ -17,7 +17,7 @@
     <dimen name="recharge_divider_margin_top">10dp</dimen>
     <dimen name="recharge_btn_height">46dp</dimen>
     <dimen name="recharge_btn_margin_h">16dp</dimen>
-    <dimen name="recharge_btn_margin_bottom">16dp</dimen>
+    <dimen name="recharge_btn_margin_bottom">72dp</dimen>
     <dimen name="recharge_btn_margin_top">6dp</dimen>
     <dimen name="recharge_empty_pad_top">28dp</dimen>
     <dimen name="recharge_empty_pad_bottom">20dp</dimen>

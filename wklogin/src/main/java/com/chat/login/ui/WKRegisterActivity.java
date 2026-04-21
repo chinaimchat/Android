@@ -196,7 +196,7 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
                 } else if (!TextUtils.equals(pwd, confirmPwd)) {
                     showSingleBtnDialog(getString(R.string.pwd_confirm_not_match));
                 } else {
-                    if (appConfig != null && appConfig.invite_code_system_on == 1 && TextUtils.isEmpty(inviteCode)) {
+                    if (appConfig != null && appConfig.register_invite_on == 1 && TextUtils.isEmpty(inviteCode)) {
                         showSingleBtnDialog(getString(R.string.invite_code_not_null));
                         return;
                     }
@@ -227,17 +227,15 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
 
     @Override
     protected void initListener() {
-        // 两个眼睛相互独立：避免“瞟一眼确认栏也把密码栏暴露给肩膀后的人”
         wkVBinding.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            wkVBinding.pwdEt.setTransformationMethod(isChecked
-                    ? HideReturnsTransformationMethod.getInstance()
-                    : PasswordTransformationMethod.getInstance());
+            if (isChecked) {
+                wkVBinding.pwdEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                wkVBinding.pwdConfirmEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            } else {
+                wkVBinding.pwdEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                wkVBinding.pwdConfirmEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
             wkVBinding.pwdEt.setSelection(Objects.requireNonNull(wkVBinding.pwdEt.getText()).length());
-        });
-        wkVBinding.checkBoxConfirm.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            wkVBinding.pwdConfirmEt.setTransformationMethod(isChecked
-                    ? HideReturnsTransformationMethod.getInstance()
-                    : PasswordTransformationMethod.getInstance());
             wkVBinding.pwdConfirmEt.setSelection(Objects.requireNonNull(wkVBinding.pwdConfirmEt.getText()).length());
         });
     }
@@ -270,7 +268,7 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
     @Override
     protected void initData() {
         showConfigLoading(true);
-        // 先按本地缓存渲染一次，避免首次打开时邀请码栏状态抖动。
+        // 冷启动时先用本地缓存配置，避免等待网络返回期间邀请码栏状态错误。
         appConfig = WKConfig.getInstance().getAppConfig();
         applyInviteCodeConfig(appConfig);
         WKCommonModel.getInstance().getAppConfig((code, msg, wkappConfig) -> {
@@ -285,7 +283,7 @@ public class WKRegisterActivity extends WKBaseActivity<ActRegisterLayoutBinding>
     }
 
     private void applyInviteCodeConfig(WKAPPConfig config) {
-        if (config != null && config.invite_code_system_on == 1) {
+        if (config != null && config.register_invite_on == 1) {
             wkVBinding.inviteCodeTv.setHint(R.string.input_invite_code_must);
             wkVBinding.inviteLayout.setVisibility(View.VISIBLE);
             wkVBinding.inviteLineView.setVisibility(View.VISIBLE);

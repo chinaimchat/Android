@@ -89,8 +89,11 @@ public class SetPayPasswordActivity extends WKBaseActivity<ActivitySetPayPasswor
     }
 
     private void upDots() {
-        for (int i = 0; i < 6; i++)
-            dots[i].setVisibility(i < pwd.length() ? View.VISIBLE : View.INVISIBLE);
+        for (int i = 0; i < 6; i++) {
+            dots[i].setBackgroundResource(i < pwd.length()
+                    ? R.drawable.bg_pay_password_dot
+                    : R.drawable.bg_pay_password_dot_empty);
+        }
     }
 
     private void reset() {

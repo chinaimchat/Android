@@ -1,8 +1,12 @@
 package com.chat.wallet.ui;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -28,7 +32,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.chat.base.base.WKBaseActivity;
+import com.chat.base.config.WKApiConfig;
 import com.chat.base.net.IRequestResultListener;
+import com.chat.base.net.OkHttpUtils;
+import com.chat.base.utils.ImageUtils;
 import com.chat.wallet.R;
 import com.chat.wallet.api.WalletModel;
 import com.chat.wallet.databinding.ActivityRechargeBinding;
@@ -37,6 +44,7 @@ import com.chat.wallet.entity.RechargeApplyResp;
 import com.chat.wallet.entity.RechargeBlockCustomer;
 import com.chat.wallet.entity.RechargeChannel;
 import com.chat.wallet.util.RechargeApplyTrackingStore;
+import com.chat.wallet.util.WalletQrEncodeUtil;
 import com.chat.wallet.util.WalletChatRouter;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,8 +53,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class RechargeActivity extends WKBaseActivity<ActivityRechargeBinding> {
+    private static final Executor QR_ENCODE_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "wallet-recharge-full-qr");
+        t.setPriority(Thread.NORM_PRIORITY - 1);
+        return t;
+    });
 
     private boolean lastChannelsLoadFailed;
     private String lastChannelsFailMsg;
@@ -55,6 +70,9 @@ public class RechargeActivity extends WKBaseActivity<ActivityRechargeBinding> {
     private int selectedUCoinIndex = 0;
     private final List<RechargeChannel> wxAliChannels = new ArrayList<>();
     private final List<RechargeChannel> uCoinChannels = new ArrayList<>();
+    private Bitmap lastQrBitmap;
+    private String lastAddress = "";
+    private int qrEncodeGeneration;
 
     @FunctionalInterface
     private interface OnChannelIndexPicked {
@@ -85,13 +103,13 @@ public class RechargeActivity extends WKBaseActivity<ActivityRechargeBinding> {
 
     @Override
     protected void rightLayoutClick() {
-        if (!RechargeApplyTrackingStore.hasTrackedApplication()) {
-            super.rightLayoutClick();
-            return;
-        }
-        Intent i = new Intent(this, RechargeApplyDetailActivity.class);
-        i.putExtra("application_no", RechargeApplyTrackingStore.getTrackedApplicationNo());
-        startActivity(i);
+        startActivity(new Intent(this, BuyUsdtOrderListActivity.class));
+        overridePendingTransition(R.anim.wallet_buy_usdt_open_enter, R.anim.wallet_buy_usdt_open_exit);
+    }
+
+    @Override
+    protected String getRightTvText(TextView textView) {
+        return getString(R.string.buy_usdt_orders);
     }
 
     private void refreshTitleBadgeUi() {
@@ -100,11 +118,7 @@ public class RechargeActivity extends WKBaseActivity<ActivityRechargeBinding> {
         if (rightTv == null) {
             return;
         }
-        if (!RechargeApplyTrackingStore.hasTrackedApplication()) {
-            hideTitleRightView();
-            return;
-        }
-        rightTv.setText(RechargeApplyTrackingStore.getTitleLabel(this));
+        rightTv.setText(getString(R.string.buy_usdt_orders));
         rightTv.setVisibility(View.VISIBLE);
         if (rightIv != null) {
             rightIv.setVisibility(View.GONE);
@@ -168,6 +182,10 @@ public class RechargeActivity extends WKBaseActivity<ActivityRechargeBinding> {
             }
         });
         wkVBinding.rechargeBtn.setOnClickListener(v -> onConfirmRechargeClick());
+        wkVBinding.rechargeFloatingCsBtn.setOnClickListener(v ->
+                WalletChatRouter.openOfficialCustomerService(this));
+        wkVBinding.uCoinCopyAddressLayout.setOnClickListener(v -> copyUCoinAddress());
+        wkVBinding.uCoinSaveQrLayout.setOnClickListener(v -> saveUCoinQr());
         wkVBinding.uCoinAmountEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -452,7 +470,7 @@ public class RechargeActivity extends WKBaseActivity<ActivityRechargeBinding> {
             selectedUCoinIndex = Math.min(selectedUCoinIndex, uCoinChannels.size() - 1);
             selectedUCoinIndex = Math.max(0, selectedUCoinIndex);
             boolean uMulti = uCoinChannels.size() > 1;
-            wkVBinding.uCoinMethodCard.setVisibility(uMulti ? View.VISIBLE : View.GONE);
+            wkVBinding.uCoinMethodCard.setVisibility(View.VISIBLE);
             wkVBinding.uCoinMethodChevron.setVisibility(uMulti ? View.VISIBLE : View.GONE);
             wkVBinding.uCoinMethodBar.setClickable(uMulti);
             wkVBinding.uCoinMethodBar.setFocusable(uMulti);
@@ -528,8 +546,160 @@ public class RechargeActivity extends WKBaseActivity<ActivityRechargeBinding> {
         if (TextUtils.isEmpty(addr)) {
             addr = ch.getDisplayName();
         }
+        lastAddress = addr;
         wkVBinding.uCoinAddressTv.setText(addr);
+        renderUCoinQr(addr);
         updateUCoinEstimate();
+    }
+
+    private void renderUCoinQr(String addr) {
+        qrEncodeGeneration++;
+        int currentGen = qrEncodeGeneration;
+        wkVBinding.uCoinQrIv.setImageDrawable(null);
+        releaseLastQrBitmap();
+        RechargeChannel ch = currentUCoinChannelOrNull();
+        if (ch == null) {
+            return;
+        }
+        String qrImageUrl = ch.getDepositQrImageUrlOrEmpty();
+        int sizePx = getResources().getDimensionPixelSize(R.dimen.recharge_sheet_qr_size);
+        if (!TextUtils.isEmpty(qrImageUrl)) {
+            String showUrl = WKApiConfig.getRechargeChannelQrImageLoadUrl(qrImageUrl);
+            if (!TextUtils.isEmpty(showUrl)) {
+                QR_ENCODE_EXECUTOR.execute(() -> loadServerQrImageWithOkHttp(showUrl, sizePx, currentGen, addr));
+                return;
+            }
+        }
+        if (TextUtils.isEmpty(addr)) {
+            return;
+        }
+        QR_ENCODE_EXECUTOR.execute(() -> {
+            Bitmap bmp = WalletQrEncodeUtil.encodeQrBitmap(addr, sizePx);
+            runOnUiThread(() -> {
+                if (isFinishing() || currentGen != qrEncodeGeneration) {
+                    if (bmp != null && !bmp.isRecycled()) {
+                        bmp.recycle();
+                    }
+                    return;
+                }
+                lastQrBitmap = bmp;
+                if (bmp != null) {
+                    wkVBinding.uCoinQrIv.setImageBitmap(bmp);
+                } else {
+                    wkVBinding.uCoinQrIv.setImageDrawable(null);
+                }
+            });
+        });
+    }
+
+    private void loadServerQrImageWithOkHttp(String showUrl, int sizePx, int gen, String fallbackAddr) {
+        try {
+            byte[] bytes = OkHttpUtils.getInstance().fetchGatewayThenBareRedirect(showUrl);
+            if (bytes == null || bytes.length == 0) {
+                scheduleFallbackQr(fallbackAddr, sizePx, gen);
+                return;
+            }
+            Bitmap decoded = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            if (decoded == null) {
+                scheduleFallbackQr(fallbackAddr, sizePx, gen);
+                return;
+            }
+            Bitmap toShow = scaleQrBitmapToMaxSide(decoded, sizePx);
+            runOnUiThread(() -> {
+                if (isFinishing() || gen != qrEncodeGeneration) {
+                    if (toShow != null && !toShow.isRecycled()) {
+                        toShow.recycle();
+                    }
+                    return;
+                }
+                releaseLastQrBitmap();
+                lastQrBitmap = toShow;
+                wkVBinding.uCoinQrIv.setImageBitmap(toShow);
+            });
+        } catch (Exception ignore) {
+            scheduleFallbackQr(fallbackAddr, sizePx, gen);
+        }
+    }
+
+    private void scheduleFallbackQr(String addr, int sizePx, int gen) {
+        if (TextUtils.isEmpty(addr)) {
+            runOnUiThread(() -> {
+                if (gen == qrEncodeGeneration) {
+                    wkVBinding.uCoinQrIv.setImageDrawable(null);
+                }
+            });
+            return;
+        }
+        Bitmap bmp = WalletQrEncodeUtil.encodeQrBitmap(addr, sizePx);
+        runOnUiThread(() -> {
+            if (isFinishing() || gen != qrEncodeGeneration) {
+                if (bmp != null && !bmp.isRecycled()) {
+                    bmp.recycle();
+                }
+                return;
+            }
+            releaseLastQrBitmap();
+            lastQrBitmap = bmp;
+            if (bmp != null) {
+                wkVBinding.uCoinQrIv.setImageBitmap(bmp);
+            } else {
+                wkVBinding.uCoinQrIv.setImageDrawable(null);
+            }
+        });
+    }
+
+    private static Bitmap scaleQrBitmapToMaxSide(Bitmap src, int maxPx) {
+        int w = src.getWidth();
+        int h = src.getHeight();
+        if (w <= 0 || h <= 0) {
+            return src;
+        }
+        if (w <= maxPx && h <= maxPx) {
+            return src;
+        }
+        float scale = Math.min((float) maxPx / w, (float) maxPx / h);
+        int nw = Math.max(1, Math.round(w * scale));
+        int nh = Math.max(1, Math.round(h * scale));
+        Bitmap out = Bitmap.createScaledBitmap(src, nw, nh, true);
+        if (out != src && !src.isRecycled()) {
+            src.recycle();
+        }
+        return out;
+    }
+
+    private void copyUCoinAddress() {
+        if (TextUtils.isEmpty(lastAddress)) {
+            showToast(R.string.recharge_sheet_no_address);
+            return;
+        }
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm != null) {
+            cm.setPrimaryClip(ClipData.newPlainText("address", lastAddress));
+            showToast(R.string.recharge_sheet_copied);
+        }
+    }
+
+    private void saveUCoinQr() {
+        if (lastQrBitmap == null || lastQrBitmap.isRecycled()) {
+            showToast(R.string.recharge_sheet_save_fail);
+            return;
+        }
+        ImageUtils.getInstance().saveBitmap(this, lastQrBitmap, true,
+                path -> showToast(R.string.recharge_sheet_save_ok));
+    }
+
+    private void releaseLastQrBitmap() {
+        if (lastQrBitmap != null && !lastQrBitmap.isRecycled()) {
+            lastQrBitmap.recycle();
+        }
+        lastQrBitmap = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        qrEncodeGeneration++;
+        releaseLastQrBitmap();
+        super.onDestroy();
     }
 
     private void bindUcoinAddressLabel(RechargeChannel ch) {

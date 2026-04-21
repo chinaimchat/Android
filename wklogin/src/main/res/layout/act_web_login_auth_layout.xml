@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:src="@mipmap/ic_close_white"
         android:tint="@color/popupTextColor" />
 
@@ -18,15 +18,19 @@
         android:layout_width="130dp"
         android:layout_height="110dp"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="56dp"
         android:src="@mipmap/icon_web" />
 
     <TextView
         android:id="@+id/webLoginDescTv"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center"
+        android:maxLines="2"
         android:text="@string/web_login_desc"
         android:textColor="@color/colorDark"
         android:textSize="16sp"
@@ -40,8 +44,8 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/loginBtn"
         style="@style/buttonNormal"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:text="@string/login_sure" />
 
     <TextView

@@ -41,11 +41,12 @@
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/contentEt"
                         android:layout_width="match_parent"
-                        android:layout_height="140dp"
+                        android:layout_height="wrap_content"
                         android:background="@color/transparent"
                         android:gravity="top"
                         android:hint="@string/hint_publish_moments"
-                        android:maxLines="4"
+                        android:minHeight="120dp"
+                        android:maxLines="8"
                         android:paddingStart="15dp"
                         android:paddingTop="15dp"
                         android:paddingEnd="15dp"
@@ -105,6 +106,8 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginEnd="10dp"
                                     android:layout_weight="1"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
                                     android:text="@string/choose_location"
                                     android:textColor="@color/colorDark"
                                     android:textSize="16sp" />
@@ -187,8 +190,9 @@
                                     android:layout_marginEnd="10dp"
                                     android:layout_weight="1"
                                     android:enabled="true"
+                                    android:ellipsize="end"
                                     android:gravity="end"
-                                    android:lines="1"
+                                    android:maxLines="1"
                                     android:text="@string/moments_public"
                                     android:textColor="@color/colorDark"
                                     android:textSize="14sp" />
@@ -222,7 +226,7 @@
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:paddingBottom="7.5dp"
+                android:paddingBottom="8dp"
                 android:visibility="gone">
 
                 <!-- 表情入口 -->
