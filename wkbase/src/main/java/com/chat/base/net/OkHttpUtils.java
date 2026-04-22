@@ -71,6 +71,8 @@ public class OkHttpUtils {
                                 }
                             })
                             .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
+                            // 多域名故障切换必须置于最外层：失败时整个链（含通用头、缓存）重试下一个 host。
+                            .addInterceptor(new DomainFalloverInterceptor())
                             .addInterceptor(mRewriteCacheControlInterceptor)
                             .addInterceptor(new CommonRequestParamInterceptor())
                             .addNetworkInterceptor(mRewriteCacheControlInterceptor)

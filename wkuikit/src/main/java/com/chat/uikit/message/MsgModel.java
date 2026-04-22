@@ -3,6 +3,7 @@ package com.chat.uikit.message;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.net.Uri;
 
 import androidx.annotation.Nullable;
 
@@ -27,7 +28,6 @@ import com.chat.base.net.ud.WKDownloader;
 import com.chat.base.net.ud.WKProgressManager;
 import com.chat.base.net.ud.WKUploader;
 import com.chat.base.utils.AndroidUtilities;
-import com.chat.base.utils.WKImAddressResolver;
 import com.chat.base.utils.WKLogUtils;
 import com.chat.base.utils.WKReader;
 import com.chat.base.utils.WKTimeUtils;
@@ -63,6 +63,8 @@ import java.util.TimerTask;
  * 消息管理
  */
 public class MsgModel extends WKBaseModel {
+    // 兜底 WS 地址的 host 随 ApiHostPool 偏好动态变化，避免写死单一域名。
+    // 见 {@link #fallbackWsAddress(IChatIp)}。
     private MsgModel() {
 
     }
@@ -265,22 +267,33 @@ public class MsgModel extends WKBaseModel {
     public void getChatIp(IChatIp iChatIp) {
         request(createService(MsgService.class).getImIp(WKConfig.getInstance().getUid()), new IRequestResultListener<>() {
             @Override
-            public void onSuccess(Object result) {
-                String tcpAddr = WKImAddressResolver.resolveTcpAddr(result);
-                WKImAddressResolver.HostPort hp = WKImAddressResolver.parseHostPort(tcpAddr);
-                if (hp != null) {
-                    iChatIp.onResult(HttpResponseCode.success, hp.host, String.valueOf(hp.port));
-                } else {
-                    WKLogUtils.e("getChatIp: 无法解析 IM 地址 tcp_addr=" + tcpAddr + " raw=" + result);
-                    iChatIp.onResult(HttpResponseCode.error, "", "0");
+            public void onSuccess(Ipentity result) {
+                if (result != null && !TextUtils.isEmpty(result.tcp_addr)) {
+                    String[] strings = result.tcp_addr.split(":");
+                    iChatIp.onResult(HttpResponseCode.success, strings[0], strings[1]);
+                    return;
                 }
+                fallbackWsAddress(iChatIp);
             }
 
             @Override
             public void onFail(int code, String msg) {
-                iChatIp.onResult(code, "", "0");
+                fallbackWsAddress(iChatIp);
             }
         });
+    }
+
+    private void fallbackWsAddress(IChatIp iChatIp) {
+        // 当 /v1/users/{uid}/im 拿不到 tcp_addr 时，用当前偏好域名拼 wss://{host}/ws 作为兜底。
+        // 偏好 host 由 ApiHostPool 在冷启动时随机挑选；运行期 DomainFalloverInterceptor
+        // 会在该 host 失联时自动切换，这里的兜底也会跟随更新。
+        String host = com.chat.base.net.ApiHostPool.getPreferredHost();
+        int port = 443;
+        if (!TextUtils.isEmpty(host)) {
+            iChatIp.onResult(HttpResponseCode.success, host, String.valueOf(port));
+        } else {
+            iChatIp.onResult(HttpResponseCode.error, "", "0");
+        }
     }
 
     public interface IChatIp {

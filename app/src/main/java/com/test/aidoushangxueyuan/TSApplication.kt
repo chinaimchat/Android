@@ -141,12 +141,13 @@ class TSApplication : MultiDexApplication() {
     }
 
     /**
-     * api_base_url 须为带协议的 API 根，且与 Web 一致，例如 http://www.tu2t0.com 或 http://www.tu2t0.com/v1；
-     * 否则相对路径拼 URL 时易出现缺端口、错主机或异常路径（如 /v1 与后续段粘连）。
+     * 多域名入口：从 [com.chat.base.net.ApiHostPool] 取当前首选 host 拼 API 根，
+     * 首次启动会从 11 个候选域中随机挑一个（等价入口分流）；运行期由
+     * DomainFalloverInterceptor 按池顺序自动切换健康域名，保持与 Web / iOS 一致。
+     * 不再把任何主域写死在此处。
      */
     private fun initApi() {
-        // 强制使用当前环境，避免本地缓存旧地址导致持续重连。
-        val apiURL = "http://www.tu2t0.com"
+        val apiURL = com.chat.base.net.ApiHostPool.defaultApiBaseURL()
         WKSharedPreferencesUtil.getInstance().putSP("api_base_url", apiURL)
         WKApiConfig.initBaseURLIncludeIP(apiURL)
     }
