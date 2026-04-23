@@ -12,6 +12,7 @@ public class WKConstants {
     public static final String refreshContacts = "refresh_contacts";
     public static final String newMsgChannelID = "wk_new_msg_notification_v2";
     public static final String newMsgInAppChannelID = "wk_new_msg_notification_in_app_v1";
+    public static final String newMsgBackgroundChannelID = "wk_new_msg_notification_sound_v1";
     public static final String newRTCChannelID = "wk_new_rtc_notification_v2";
     /** 前台服务：保持 IM 连接（dataSync 类型通知渠道） */
     public static final String imConnectionFgsChannelId = "wk_im_connection_fgs_v1";

@@ -26,7 +26,7 @@ object PushNotificationHelper {
 
     /** 应用退到桌面后台后，使用高优先级横幅通知。 */
     private val MESSAGE_BACKGROUND = NotificationCompatUtil.Channel(
-        channelId = WKConstants.newMsgChannelID,
+        channelId = WKConstants.newMsgBackgroundChannelID,
         name = WKBaseApplication.getInstance().context.getString(R.string.new_msg_notification),
         importance = NotificationManager.IMPORTANCE_HIGH,
         lockScreenVisibility = NotificationCompat.VISIBILITY_PUBLIC,

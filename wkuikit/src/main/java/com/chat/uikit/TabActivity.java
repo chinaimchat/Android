@@ -60,6 +60,7 @@ import com.chat.uikit.fragment.ChatFragment;
 import com.chat.uikit.fragment.ContactsFragment;
 import com.chat.uikit.fragment.MyFragment;
 import com.chat.uikit.fragment.WorkplaceFragment;
+import com.chat.uikit.utils.NotificationPermissionHelper;
 import com.chat.uikit.user.service.UserModel;
 
 import org.telegram.ui.Components.RLottieImageView;
@@ -118,24 +119,7 @@ public class TabActivity extends WKBaseActivity<ActTabMainBinding> {
     protected void initView() {
 //        wkVBinding.vp.setUserInputEnabled(false);
         UserModel.getInstance().device();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            String desc = String.format(getString(R.string.notification_permissions_desc), getString(R.string.app_name));
-            RxPermissions rxPermissions = new RxPermissions(this);
-            rxPermissions.request(Manifest.permission.POST_NOTIFICATIONS).subscribe(aBoolean -> {
-                if (!aBoolean) {
-                    WKDialogUtils.getInstance().showDialog(this, getString(com.chat.base.R.string.authorization_request), desc, true, getString(R.string.cancel), getString(R.string.to_set), 0, Theme.colorAccount, index -> {
-                        if (index == 1) {
-                            EndpointManager.getInstance().invoke("show_open_notification_dialog", this);
-                        }
-                    });
-                }
-            });
-        } else {
-            boolean isEnabled = NotificationManagerCompat.from(this).areNotificationsEnabled();
-            if (!isEnabled) {
-                EndpointManager.getInstance().invoke("show_open_notification_dialog", this);
-            }
-        }
+        NotificationPermissionHelper.ensureNotificationPermission(this);
 
         chatIV = new RLottieImageView(this);
         contactsIV = new RLottieImageView(this);

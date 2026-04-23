@@ -97,7 +97,7 @@ public class MsgNoticesSettingActivity extends WKBaseActivity<ActMsgNoticesSetLa
             }
         });
         wkVBinding.openNoticeLayout.setOnClickListener(v -> {
-            WKOSUtils.openChannelSetting(this, WKConstants.newMsgChannelID);
+            WKOSUtils.openChannelSetting(this, WKConstants.newMsgBackgroundChannelID);
         });
         wkVBinding.openRTCNoticeLayout.setOnClickListener(v -> {
             WKOSUtils.openChannelSetting(this, WKConstants.newRTCChannelID);

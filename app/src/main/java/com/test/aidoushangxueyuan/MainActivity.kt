@@ -19,6 +19,7 @@ import com.chat.base.utils.WKDialogUtils
 import com.chat.login.ui.PerfectUserInfoActivity
 import com.chat.login.ui.WKLoginActivity
 import com.chat.uikit.TabActivity
+import com.chat.uikit.utils.NotificationPermissionHelper
 import com.test.aidoushangxueyuan.databinding.ActivityMainBinding
 import com.xinbida.wukongim.WKIM
 
@@ -74,7 +75,10 @@ class MainActivity : WKBaseActivity<ActivityMainBinding>() {
             WKSharedPreferencesUtil.getInstance().getBoolean("show_agreement_dialog")
         if (isShowDialog) {
             showDialog()
-        } else gotoApp()
+        } else {
+            NotificationPermissionHelper.ensureNotificationPermission(this)
+            gotoApp()
+        }
     }
 
     private fun gotoApp() {
@@ -149,6 +153,7 @@ class MainActivity : WKBaseActivity<ActivityMainBinding>() {
                     WKBaseApplication.getInstance().packageName,
                     WKBaseApplication.getInstance().application
                 )
+                NotificationPermissionHelper.ensureNotificationPermission(this)
                 gotoApp()
             } else {
                 finish()

@@ -284,6 +284,12 @@ class TSApplication : MultiDexApplication() {
             )
             notificationManager.createNotificationChannel(
                 createMessageChannel(
+                    WKConstants.newMsgBackgroundChannelID,
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+            )
+            notificationManager.createNotificationChannel(
+                createMessageChannel(
                     WKConstants.newMsgInAppChannelID,
                     NotificationManager.IMPORTANCE_DEFAULT
                 )

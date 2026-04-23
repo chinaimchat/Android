@@ -166,7 +166,7 @@ public class WKPushApplication {
             Context context = (Context) object;
             WKDialogUtils.getInstance().showDialog(context, context.getString(R.string.open_notification_title), context.getString(R.string.open_notification_content), true, "", context.getString(R.string.open_setting), 0, Theme.colorAccount, index -> {
                 if (index == 1) {
-                    WKOSUtils.openChannelSetting(context, WKConstants.newMsgChannelID);
+                    WKOSUtils.openChannelSetting(context, WKConstants.newMsgBackgroundChannelID);
                 }
             });
             return null;
@@ -247,7 +247,7 @@ public class WKPushApplication {
 
     private static void notifyChannel(Application context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String channelId = WKConstants.newMsgChannelID;
+            String channelId = WKConstants.newMsgBackgroundChannelID;
             String channelName = "Default_Channel";
             String channelDescription = "this is default channel!";
             NotificationChannel mNotificationChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
