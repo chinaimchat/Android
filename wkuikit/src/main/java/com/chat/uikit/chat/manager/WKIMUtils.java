@@ -657,6 +657,10 @@ public class WKIMUtils {
         if (msgNotice == 0) {
             return;
         }
+        String fallbackMsgId = !TextUtils.isEmpty(msg.clientMsgNO) ? msg.clientMsgNO : msg.messageID;
+        if (!PushNotifyDedupHelper.shouldNotify(channel.channelID, channel.channelType, msg.messageSeq, fallbackMsgId)) {
+            return;
+        }
 //        Activity activity = ActManagerUtils.getInstance().getCurrentActivity();
 //        if (activity == null || activity.getComponentName().getClassName().equals(TabActivity.class.getName())) {
         if (playNewMsgMedia) {
@@ -682,7 +686,12 @@ public class WKIMUtils {
 //        if (isVibrate) {
 //            PushNotificationHelper.INSTANCE.notifyMention(WKUIKitApplication.getInstance().getContext(), 1, showTitle, showContent);
 //        } else {
-        int notifyId = Math.abs(Objects.hash(channel.channelID, (int) channel.channelType));
+        int notifyId;
+        if (msg.messageSeq > 0) {
+            notifyId = Math.abs(Objects.hash(channel.channelID, (int) channel.channelType, msg.messageSeq));
+        } else {
+            notifyId = Math.abs(Objects.hash(channel.channelID, (int) channel.channelType, fallbackMsgId));
+        }
         PushNotificationHelper.INSTANCE.notifyMessage(WKUIKitApplication.getInstance().getContext(), notifyId, showTitle, showContent, channel.channelID, channel.channelType);
 //        }
 //        showNotice(showTitle, finalShowContent, null, isVibrate);

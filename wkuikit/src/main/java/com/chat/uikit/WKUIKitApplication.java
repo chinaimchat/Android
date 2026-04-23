@@ -14,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -142,6 +144,18 @@ public class WKUIKitApplication {
     public String chattingChannelID;
     public boolean isRefreshChatActivityMessage = false;
     private volatile boolean appInForeground = true;
+    private final Handler weakNetworkHandler = new Handler(Looper.getMainLooper());
+    private volatile long lastWeakNetworkLostAtMs = 0L;
+    private volatile long lastWeakNetworkRecoverAtMs = 0L;
+    private final Runnable weakNetworkSecondPass = () -> {
+        if (TextUtils.isEmpty(WKConfig.getInstance().getToken())) {
+            return;
+        }
+        WKIMUtils.getInstance().initIMListener();
+        startChat();
+        MsgModel.getInstance().syncReminder();
+        MsgModel.getInstance().syncCoverExtra();
+    };
 
     private WKUIKitApplication() {
     }
@@ -175,6 +189,30 @@ public class WKUIKitApplication {
 
     public void setAppInForeground(boolean appInForeground) {
         this.appInForeground = appInForeground;
+    }
+
+    public void onWeakNetworkLost() {
+        lastWeakNetworkLostAtMs = System.currentTimeMillis();
+    }
+
+    public void onWeakNetworkAvailable(String source) {
+        if (TextUtils.isEmpty(WKConfig.getInstance().getToken())) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now - lastWeakNetworkRecoverAtMs < 5000) {
+            return;
+        }
+        lastWeakNetworkRecoverAtMs = now;
+        WKIMUtils.getInstance().initIMListener();
+        startChat();
+        MsgModel.getInstance().syncReminder();
+        MsgModel.getInstance().syncCoverExtra();
+        weakNetworkHandler.removeCallbacks(weakNetworkSecondPass);
+        if (lastWeakNetworkLostAtMs > 0 && now - lastWeakNetworkLostAtMs < 5 * 60 * 1000L) {
+            weakNetworkHandler.postDelayed(weakNetworkSecondPass, 4000);
+        }
+        Log.i("WKUIKitApplication", "weak network recovered via " + source);
     }
 
     /**

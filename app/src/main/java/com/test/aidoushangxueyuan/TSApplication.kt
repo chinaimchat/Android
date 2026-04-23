@@ -265,6 +265,11 @@ class TSApplication : MultiDexApplication() {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
         connectivityManager = cm
         val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                WKUIKitApplication.getInstance().onWeakNetworkLost()
+            }
+
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
                 if (TextUtils.isEmpty(WKConfig.getInstance().token)) {
@@ -279,8 +284,7 @@ class TSApplication : MultiDexApplication() {
                 }
                 lastNetworkReconnectAtMs = now
                 Handler(Looper.getMainLooper()).post {
-                    WKIMUtils.getInstance().initIMListener()
-                    WKUIKitApplication.getInstance().startChat()
+                    WKUIKitApplication.getInstance().onWeakNetworkAvailable("network_callback")
                 }
             }
         }
