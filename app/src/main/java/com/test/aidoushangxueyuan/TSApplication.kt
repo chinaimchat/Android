@@ -10,6 +10,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -27,6 +31,7 @@ import com.chat.base.config.WKSharedPreferencesUtil
 import com.chat.base.endpoint.EndpointManager
 import com.chat.base.ui.Theme
 import com.chat.base.utils.ActManagerUtils
+import com.chat.base.utils.WKNetUtil
 import com.chat.base.utils.WKPlaySound
 import com.chat.base.utils.WKTimeUtils
 import com.chat.advanced.WKAdvancedApplication
@@ -45,6 +50,7 @@ import com.chat.richeditor.WKRichApplication
 import com.chat.scan.WKScanApplication
 import com.chat.security.WKSecurityApplication
 import com.chat.sticker.WKStickerApplication
+import com.chat.uikit.AliveJobService
 import com.chat.uikit.ImConnectionForegroundController
 import com.chat.uikit.TabActivity
 import com.chat.video.WKVideoApplication
@@ -55,6 +61,10 @@ import com.chat.uikit.user.service.UserModel
 import kotlin.system.exitProcess
 
 class TSApplication : MultiDexApplication() {
+    private var connectivityManager: ConnectivityManager? = null
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
+    private var lastNetworkReconnectAtMs: Long = 0L
+
     override fun onCreate() {
         super.onCreate()
         val processName = getProcessName(this, Process.myPid())
@@ -137,6 +147,7 @@ class TSApplication : MultiDexApplication() {
         WKUIKitApplication.getInstance().init(this)
         WKPushApplication.getInstance().init(getAppPackageName(), this)
         addAppFrontBack()
+        registerNetworkKeepAlive()
         addListener()
     }
 
@@ -192,6 +203,7 @@ class TSApplication : MultiDexApplication() {
                 ImConnectionForegroundController.stop(this@TSApplication)
                 WKUIKitApplication.getInstance().setAppInForeground(true)
                 if (!TextUtils.isEmpty(WKConfig.getInstance().token)) {
+                    AliveJobService.startJob(this@TSApplication)
                     val keepBackgroundNotifications =
                         WKConfig.getInstance().userInfo?.setting?.new_msg_notice == 1
                     if (WKBaseApplication.getInstance().disconnect) {
@@ -211,6 +223,9 @@ class TSApplication : MultiDexApplication() {
 
             override fun onBack() {
                 WKUIKitApplication.getInstance().setAppInForeground(false)
+                if (!TextUtils.isEmpty(WKConfig.getInstance().token)) {
+                    AliveJobService.startJob(this@TSApplication)
+                }
                 val result = EndpointManager.getInstance().invoke("rtc_is_calling", null)
                 var isCalling = false
                 if (result != null) {
@@ -241,6 +256,61 @@ class TSApplication : MultiDexApplication() {
 
             }
         })
+    }
+
+    private fun registerNetworkKeepAlive() {
+        if (networkCallback != null) {
+            return
+        }
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return
+        connectivityManager = cm
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                if (TextUtils.isEmpty(WKConfig.getInstance().token)) {
+                    return
+                }
+                if (!WKNetUtil.isNetworkAvailable(this@TSApplication)) {
+                    return
+                }
+                val now = System.currentTimeMillis()
+                if (now - lastNetworkReconnectAtMs < 5000) {
+                    return
+                }
+                lastNetworkReconnectAtMs = now
+                Handler(Looper.getMainLooper()).post {
+                    WKIMUtils.getInstance().initIMListener()
+                    WKUIKitApplication.getInstance().startChat()
+                }
+            }
+        }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                cm.registerDefaultNetworkCallback(callback)
+            } else {
+                val request = NetworkRequest.Builder()
+                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .build()
+                cm.registerNetworkCallback(request, callback)
+            }
+            networkCallback = callback
+        } catch (e: Exception) {
+            Log.e("TSApplication", "registerNetworkKeepAlive failed", e)
+        }
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        val callback = networkCallback
+        val cm = connectivityManager
+        if (callback != null && cm != null) {
+            try {
+                cm.unregisterNetworkCallback(callback)
+            } catch (_: Exception) {
+            }
+        }
+        networkCallback = null
+        connectivityManager = null
     }
 
     private fun addListener() {

@@ -66,6 +66,38 @@ object PushNotificationHelper {
      * @param channelId 会话 channel id
      * @param channelType 会话类型（单聊/群等）
      */
+    fun notifyOfflinePush(
+        context: Context,
+        id: Int,
+        notifyTag: String?,
+        title: String?,
+        text: String?,
+        channelId: String,
+        channelType: Byte
+    ) {
+        val chatIntent = WKIMUtils.getInstance().buildChatIntentForNotification(context, channelId, channelType)
+        val intent = NotifyRelayActivity.relayIntent(context, chatIntent)
+        val builder = NotificationCompatUtil.createNotificationBuilder(
+            context,
+            MESSAGE_BACKGROUND,
+            title,
+            text,
+            intent
+        )
+        builder.setOnlyAlertOnce(false)
+        builder.setStyle(
+            NotificationCompat.BigTextStyle()
+                .bigText(text)
+        )
+        builder.setCategory(NotificationCompat.CATEGORY_MESSAGE)
+        val notification = buildDefaultConfig(builder)
+        if (!notifyTag.isNullOrEmpty()) {
+            NotificationCompatUtil.notify(context, notifyTag, id, notification)
+        } else {
+            NotificationCompatUtil.notify(context, id, notification)
+        }
+    }
+
     fun notifyMessage(
         context: Context,
         id: Int,
@@ -76,11 +108,7 @@ object PushNotificationHelper {
     ) {
         val chatIntent = WKIMUtils.getInstance().buildChatIntentForNotification(context, channelId, channelType)
         val intent = NotifyRelayActivity.relayIntent(context, chatIntent)
-        val notifChannel = if (com.chat.uikit.WKUIKitApplication.getInstance().isAppInForeground()) {
-            MESSAGE_IN_APP
-        } else {
-            MESSAGE_BACKGROUND
-        }
+        val notifChannel = MESSAGE_BACKGROUND
 
         val builder = NotificationCompatUtil.createNotificationBuilder(
             context,
@@ -89,6 +117,7 @@ object PushNotificationHelper {
             text,
             intent
         )
+        builder.setOnlyAlertOnce(false)
 
         // 默认情况下，通知的文字内容会被截断以放在一行。如果您想要更长的通知，可以使用 setStyle() 添加样式模板来启用可展开的通知。
         builder.setStyle(

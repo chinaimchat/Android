@@ -5,12 +5,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.chat.base.config.WKConfig;
-import com.chat.base.endpoint.EndpointManager;
 import com.chat.push.WKPushApplication;
 import com.chat.push.service.PushModel;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Map;
 
 public class WKFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -29,10 +29,13 @@ public class WKFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage msg) {
         super.onMessageReceived(msg);
         Log.e("收到Firebase推送消息", msg.getFrom());
-        // 服务端宜发 data payload / 高优先级，以便在后台触发重连；仅 notification 时系统可能直接展示而不回调此处。
-        if (!TextUtils.isEmpty(WKConfig.getInstance().getToken())) {
-            EndpointManager.getInstance().invoke("wk_fcm_wake_im", null);
+        // 服务端应发「仅 data + 高优先级」：此处统一唤醒 IM + 本地 notify，不依赖系统 notification 栏。
+        Map<String, String> data = msg.getData();
+        if (data == null || data.isEmpty()) {
+            return;
         }
+        Map<String, String> payload = OfflinePushPayloadHelper.normalizeFlatMap(data);
+        OfflinePushPayloadHelper.dispatch(getApplicationContext(), payload);
     }
 
 }

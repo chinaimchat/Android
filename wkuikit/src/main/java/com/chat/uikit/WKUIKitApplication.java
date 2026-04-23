@@ -5,13 +5,16 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import android.Manifest;
 import android.app.Application;
 import android.app.Dialog;
+import android.app.KeyguardManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.PowerManager;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -107,9 +111,12 @@ import com.chat.uikit.setting.MsgNoticesSettingActivity;
 import com.chat.uikit.setting.SettingActivity;
 import com.chat.uikit.user.MyInviteCodeActivity;
 import com.chat.uikit.user.UserDetailActivity;
+import com.chat.uikit.utils.PushNotifyDedupHelper;
+import com.chat.uikit.utils.PushNotificationHelper;
 import com.xinbida.wukongim.WKIM;
 import com.xinbida.wukongim.entity.WKChannel;
 import com.xinbida.wukongim.entity.WKChannelType;
+import com.xinbida.wukongim.entity.WKConversationMsg;
 import com.xinbida.wukongim.entity.WKMsg;
 import com.xinbida.wukongim.msgmodel.WKImageContent;
 import com.xinbida.wukongim.msgmodel.WKMessageContent;
@@ -122,6 +129,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -169,6 +177,34 @@ public class WKUIKitApplication {
         this.appInForeground = appInForeground;
     }
 
+    /**
+     * 锁屏/灭屏场景下，即使进程仍被判定为前台，也应允许系统通知弹出。
+     */
+    public boolean isDeviceLockedOrScreenOff(Context context) {
+        if (context == null) {
+            return false;
+        }
+        boolean locked = false;
+        try {
+            KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+            locked = keyguardManager != null && keyguardManager.isKeyguardLocked();
+        } catch (Exception ignored) {
+        }
+        boolean screenOff = false;
+        try {
+            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            if (powerManager != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                    screenOff = !powerManager.isInteractive();
+                } else {
+                    screenOff = !powerManager.isScreenOn();
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return locked || screenOff;
+    }
+
 
     public void initIM() {
         if (!TextUtils.isEmpty(WKConfig.getInstance().getToken())) {
@@ -208,6 +244,91 @@ public class WKUIKitApplication {
                 initIM();
                 startChat();
             }
+            return null;
+        });
+        // 离线推送：data/透传统一由 wkpush 解析后调用，此处仅负责本地 Notification（不依赖各厂商系统栏）
+        EndpointManager.getInstance().setMethod("wk_offline_push_notify", object -> {
+            if (!(object instanceof Map)) {
+                return null;
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, String> data = (Map<String, String>) object;
+            Context ctx = mContext.get();
+            if (ctx == null) {
+                return null;
+            }
+            // 仅在「真前台可见」时抑制系统通知；锁屏/灭屏时即使前台态也要放行通知。
+            if (isAppInForeground() && !isDeviceLockedOrScreenOff(ctx)) {
+                return null;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    return null;
+                }
+            } else if (!NotificationManagerCompat.from(ctx).areNotificationsEnabled()) {
+                return null;
+            }
+            String channelId = data.get("channel_id");
+            if (TextUtils.isEmpty(channelId)) {
+                return null;
+            }
+            String channelTypeStr = data.get("channel_type");
+            byte channelType = 1;
+            if (!TextUtils.isEmpty(channelTypeStr)) {
+                try {
+                    channelType = Byte.parseByte(channelTypeStr.trim());
+                } catch (NumberFormatException ignored) {
+                    channelType = 1;
+                }
+            }
+            String title = data.get("title");
+            String body = data.get("body");
+            if (TextUtils.isEmpty(body)) {
+                WKConversationMsg conversationMsg =
+                        WKIM.getInstance().getConversationManager().getWithChannel(channelId, channelType);
+                if (conversationMsg != null && !TextUtils.isEmpty(conversationMsg.lastClientMsgNO)) {
+                    WKMsg latestMsg = WKIM.getInstance().getMsgManager().getWithClientMsgNO(conversationMsg.lastClientMsgNO);
+                    if (latestMsg != null
+                            && latestMsg.baseContentMsgModel != null
+                            && !TextUtils.isEmpty(latestMsg.baseContentMsgModel.getDisplayContent())) {
+                        body = latestMsg.baseContentMsgModel.getDisplayContent();
+                    }
+                }
+            }
+            if (TextUtils.isEmpty(body)) {
+                body = WKBaseApplication.getInstance().getContext().getString(R.string.default_new_msg);
+            }
+            if (TextUtils.isEmpty(title)) {
+                WKChannel channel = WKIM.getInstance().getChannelManager().getChannel(channelId, channelType);
+                if (channel != null) {
+                    title = TextUtils.isEmpty(channel.channelRemark) ? channel.channelName : channel.channelRemark;
+                }
+            }
+            if (TextUtils.isEmpty(title)) {
+                title = body;
+            }
+            String notifyIdStr = data.get("notify_id");
+            long messageSeq = 0;
+            String messageSeqStr = data.get("message_seq");
+            if (!TextUtils.isEmpty(messageSeqStr)) {
+                try {
+                    messageSeq = Long.parseLong(messageSeqStr);
+                } catch (NumberFormatException ignored) {
+                    messageSeq = 0;
+                }
+            }
+            if (!PushNotifyDedupHelper.shouldNotify(channelId, channelType, messageSeq, notifyIdStr)) {
+                return null;
+            }
+            int nid = Math.abs((notifyIdStr != null ? notifyIdStr : channelId).hashCode());
+            if (!TextUtils.isEmpty(notifyIdStr)) {
+                try {
+                    long parsed = Long.parseLong(notifyIdStr);
+                    nid = (int) (parsed % Integer.MAX_VALUE);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            PushNotificationHelper.INSTANCE.notifyOfflinePush(ctx, nid, notifyIdStr, title, body, channelId, channelType);
             return null;
         });
         EndpointManager.getInstance().setMethod("show_keep_alive_item", object -> {
