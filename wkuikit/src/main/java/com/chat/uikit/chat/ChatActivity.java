@@ -2343,23 +2343,27 @@ public class ChatActivity extends SwipeBackActivity implements IConversationCont
                 // 判断当前会话是否存在正在输入
                 int index = chatAdapter.getData().size() - 1;
                 if (chatAdapter.lastMsgIsTyping()) index--;
-                if (index < 0) index = 0;
+                boolean hasPreviousItem = index >= 0 && index < chatAdapter.getData().size();
                 WKUIChatMsgItemEntity itemEntity = WKIMUtils.getInstance().msg2UiMsg(this, msg, count, showNickName, chatAdapter.isShowChooseItem());
                 if (timeMsg == null) {
-                    if (WKReader.isNotEmpty(chatAdapter.getData())) {
+                    if (hasPreviousItem) {
                         chatAdapter.getData().get(index).nextMsg = msg;
                         itemEntity.previousMsg = chatAdapter.getData().get(index).wkMsg;
                     }
                 } else {
-                    chatAdapter.getData().get(index).nextMsg = timeMsg;
+                    if (hasPreviousItem) {
+                        chatAdapter.getData().get(index).nextMsg = timeMsg;
+                    }
                     itemEntity.previousMsg = timeMsg;
                 }
-                chatAdapter.addData(index + 1, itemEntity);
-                int type = chatAdapter.getData().get(index).wkMsg.type;
-                if (WKContentType.isLocalMsg(type) || WKContentType.isSystemMsg(type)) {
-                    chatAdapter.notifyItemChanged(index);
-                } else {
-                    chatAdapter.notifyBackground(index);
+                chatAdapter.addData(hasPreviousItem ? index + 1 : 0, itemEntity);
+                if (hasPreviousItem) {
+                    int type = chatAdapter.getData().get(index).wkMsg.type;
+                    if (WKContentType.isLocalMsg(type) || WKContentType.isSystemMsg(type)) {
+                        chatAdapter.notifyItemChanged(index);
+                    } else {
+                        chatAdapter.notifyBackground(index);
+                    }
                 }
 
                 if (isToEnd) {
