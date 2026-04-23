@@ -19,7 +19,9 @@ import com.chat.uikit.workplace.WorkplaceCategory;
 import com.chat.uikit.workplace.WorkplaceModel;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WorkplaceFragment extends WKBaseFragment<FragWorkplaceLayoutBinding> {
 
@@ -59,22 +61,50 @@ public class WorkplaceFragment extends WKBaseFragment<FragWorkplaceLayoutBinding
             adapter.setList(new ArrayList<>());
             return;
         }
-        WorkplaceCategory first = categories.get(0);
-        if (first == null || TextUtils.isEmpty(first.category_no)) {
+        List<WorkplaceCategory> validCategories = new ArrayList<>();
+        for (WorkplaceCategory category : categories) {
+            if (category != null && !TextUtils.isEmpty(category.category_no)) {
+                validCategories.add(category);
+            }
+        }
+        if (validCategories.isEmpty()) {
             adapter.setList(new ArrayList<>());
             return;
         }
-        WorkplaceModel.getInstance().getAppsWithCategory(first.category_no, apps -> {
-            if (!isAdded() || getActivity() == null || adapter == null) return;
-            if (apps == null) {
-                adapter.setList(new ArrayList<>());
-            } else {
-                adapter.setList(apps);
-            }
-        });
+        loadAppsFromAllCategories(validCategories);
+    }
+
+    private void loadAppsFromAllCategories(List<WorkplaceCategory> categories) {
+        final int total = categories.size();
+        final int[] finished = {0};
+        final Map<String, WorkplaceApp> appMap = new LinkedHashMap<>();
+        for (WorkplaceCategory category : categories) {
+            WorkplaceModel.getInstance().getAppsWithCategory(category.category_no, apps -> {
+                if (apps != null && !apps.isEmpty()) {
+                    for (WorkplaceApp app : apps) {
+                        if (app == null || TextUtils.isEmpty(app.app_id)) {
+                            continue;
+                        }
+                        if (!appMap.containsKey(app.app_id)) {
+                            appMap.put(app.app_id, app);
+                        }
+                    }
+                }
+                finished[0]++;
+                if (finished[0] < total) {
+                    return;
+                }
+                List<WorkplaceApp> merged = new ArrayList<>(appMap.values());
+                if (!isAdded() || getActivity() == null || adapter == null) return;
+                adapter.setList(merged);
+            });
+        }
     }
 
     private void openApp(WorkplaceApp app) {
+        if (app == null || app.status == 0) {
+            return;
+        }
         if (app.jump_type == 0) {
             openWeb(app.web_route, app.icon);
             return;
