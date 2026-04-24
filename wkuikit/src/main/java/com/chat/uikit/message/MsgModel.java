@@ -28,6 +28,7 @@ import com.chat.base.net.ud.WKDownloader;
 import com.chat.base.net.ud.WKProgressManager;
 import com.chat.base.net.ud.WKUploader;
 import com.chat.base.utils.AndroidUtilities;
+import com.chat.base.utils.WKImAddressResolver;
 import com.chat.base.utils.WKLogUtils;
 import com.chat.base.utils.WKReader;
 import com.chat.base.utils.WKTimeUtils;
@@ -269,9 +270,12 @@ public class MsgModel extends WKBaseModel {
             @Override
             public void onSuccess(Ipentity result) {
                 if (result != null && !TextUtils.isEmpty(result.tcp_addr)) {
-                    String[] strings = result.tcp_addr.split(":");
-                    iChatIp.onResult(HttpResponseCode.success, strings[0], strings[1]);
-                    return;
+                    WKImAddressResolver.HostPort hostPort = WKImAddressResolver.parseHostPort(result.tcp_addr);
+                    if (hostPort != null) {
+                        iChatIp.onResult(HttpResponseCode.success, hostPort.host, String.valueOf(hostPort.port));
+                        return;
+                    }
+                    WKLogUtils.e("IM地址解析失败，使用兜底地址：" + result.tcp_addr);
                 }
                 fallbackWsAddress(iChatIp);
             }
