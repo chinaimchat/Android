@@ -10,6 +10,7 @@ import com.chat.base.net.entity.UploadResultEntity;
 import com.chat.base.utils.WKTimeUtils;
 
 import java.io.File;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -35,8 +36,8 @@ public class WKUploader extends WKBaseModel {
     }
 
     public void upload(String uploadUrl, String filePath, Object tag, final IUploadBack iUploadBack) {
-        MediaType mediaType = MediaType.Companion.parse("multipart/form-data");
         File file = new File(filePath);
+        MediaType mediaType = guessPartMediaType(file.getName());
         RequestBody fileBody = RequestBody.Companion.create(file, mediaType);
         FileRequestBody fileRequestBody = new FileRequestBody(fileBody, tag);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), fileRequestBody);
@@ -55,6 +56,25 @@ public class WKUploader extends WKBaseModel {
                 }
             }
         });
+    }
+
+    /** 与 iOS {@code WKAPIClient fileUpload:... mimeType:} 对齐：multipart 单文件 part 使用真实图片类型，而非 multipart/form-data。 */
+    private static MediaType guessPartMediaType(String fileName) {
+        int dot = fileName.lastIndexOf('.');
+        String ext = dot >= 0 ? fileName.substring(dot + 1).toLowerCase(Locale.US) : "";
+        switch (ext) {
+            case "jpg":
+            case "jpeg":
+                return MediaType.Companion.parse("image/jpeg");
+            case "png":
+                return MediaType.Companion.parse("image/png");
+            case "gif":
+                return MediaType.Companion.parse("image/gif");
+            case "webp":
+                return MediaType.Companion.parse("image/webp");
+            default:
+                return MediaType.Companion.parse("application/octet-stream");
+        }
     }
 
     public void getUploadFileUrl(String channelID, byte channelType, String localPath, final IGetUploadFileUrl iGetUploadFileUrl) {

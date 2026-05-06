@@ -49,14 +49,16 @@ public class WKCropImageActivity extends WKBaseActivity<ActCutImgLayoutBinding> 
     protected void rightLayoutClick() {
         super.rightLayoutClick();
         Bitmap bitmap = wkVBinding.cropImageView.getCroppedImage(MAX_AVATAR_SIZE, MAX_AVATAR_SIZE);
-        if (bitmap != null) {
-            ImageUtils.getInstance().saveBitmap(this, bitmap, false, path -> {
-                Intent intent = new Intent();
-                intent.putExtra("path", path);
-                setResult(RESULT_OK, intent);
-                finish();
-            });
+        if (bitmap == null) {
+            showToast(R.string.avatar_process_fail);
+            return;
         }
+        ImageUtils.getInstance().saveAvatarForUpload(this, bitmap, path -> {
+            Intent intent = new Intent();
+            intent.putExtra("path", path);
+            setResult(RESULT_OK, intent);
+            finish();
+        });
     }
 
     @Override
@@ -69,11 +71,16 @@ public class WKCropImageActivity extends WKBaseActivity<ActCutImgLayoutBinding> 
     @Override
     protected void initView() {
         String path = getIntent().getStringExtra("path");
-        if (!TextUtils.isEmpty(path)) {
-            File file = new File(path);
-            if (file.exists()) {
-                wkVBinding.cropImageView.setImageUriAsync(Uri.fromFile(file));
-            }
+        if (TextUtils.isEmpty(path)) {
+            return;
         }
+        Uri uri;
+        if (path.startsWith("content:") || path.startsWith("file:")) {
+            uri = Uri.parse(path);
+        } else {
+            File file = new File(path);
+            uri = file.exists() ? Uri.fromFile(file) : Uri.parse(path);
+        }
+        wkVBinding.cropImageView.setImageUriAsync(uri);
     }
 }

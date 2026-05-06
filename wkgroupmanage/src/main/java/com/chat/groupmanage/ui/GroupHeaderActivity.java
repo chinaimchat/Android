@@ -184,6 +184,8 @@ public class GroupHeaderActivity extends WKBaseActivity<ActGroupHeaderLayoutBind
                     channel.avatarCacheKey = UUID.randomUUID().toString().replace("-", "");
                     WKIM.getInstance().getChannelManager().updateAvatarCacheKey(groupNO, WKChannelType.GROUP, channel.avatarCacheKey);
                     GlideUtils.getInstance().showAvatarImg(this, channel.channelID, WKChannelType.GROUP, channel.avatarCacheKey, wkVBinding.avatarIv);
+                } else {
+                    showToast(com.chat.base.R.string.avatar_upload_fail);
                 }
             });
         }

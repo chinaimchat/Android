@@ -46,6 +46,9 @@
     <string name="nodata">暂无数据</string>
     <string name="you">你</string>
     <string name="download_err">下载失败</string>
+    <string name="avatar_upload_fail">头像上传失败</string>
+    <string name="avatar_process_fail">图片处理失败</string>
+    <string name="http_error_403">没有权限执行此操作</string>
     <string name="is_new_version">当前已是最新版本</string>
     <string name="version_desc">更新说明</string>
     <string name="find_new_version">发现新版本</string>

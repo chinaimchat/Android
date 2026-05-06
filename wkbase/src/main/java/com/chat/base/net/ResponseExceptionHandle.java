@@ -3,6 +3,8 @@ package com.chat.base.net;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.chat.base.R;
+import com.chat.base.WKBaseApplication;
 import com.chat.base.utils.WKLogUtils;
 
 import org.json.JSONException;
@@ -62,6 +64,36 @@ public class ResponseExceptionHandle {
                     break;
                 case 401:
                     responeThrowable.setMessage("认证失败");
+                    break;
+                case 403:
+                    try {
+                        String errorStr = null;
+                        if (httpException.response() != null && httpException.response().errorBody() != null) {
+                            errorStr = httpException.response().errorBody().string();
+                        }
+                        if (!TextUtils.isEmpty(errorStr)) {
+                            try {
+                                Log.e("错误信息：", errorStr);
+                                JSONObject jsonObject = new JSONObject(errorStr);
+                                String msg = jsonObject.optString("msg");
+                                if (!TextUtils.isEmpty(msg)) {
+                                    responeThrowable.setMessage(msg);
+                                    responeThrowable.setErrJson(errorStr);
+                                    responeThrowable.setStatus(jsonObject.optInt("status", 403));
+                                    Log.e("请求错误：", responeThrowable.getStatus() + "|" + msg);
+                                    break;
+                                }
+                            } catch (JSONException ex) {
+                                WKLogUtils.e("解析请求【403】不是json结构");
+                            }
+                        }
+                        responeThrowable.setMessage(WKBaseApplication.getInstance().getContext().getString(R.string.http_error_403));
+                        responeThrowable.setStatus(403);
+                    } catch (IOException ex) {
+                        WKLogUtils.e("解析请求【403】结果错误");
+                        responeThrowable.setMessage(WKBaseApplication.getInstance().getContext().getString(R.string.http_error_403));
+                        responeThrowable.setStatus(403);
+                    }
                     break;
                 case 404:
                     responeThrowable.setMessage("请求地址不存在");

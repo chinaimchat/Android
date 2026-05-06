@@ -46,6 +46,9 @@
     <string name="nodata">No Data</string>
     <string name="you">You </string>
     <string name="download_err">Download fail</string>
+    <string name="avatar_upload_fail">Avatar upload failed</string>
+    <string name="avatar_process_fail">Image processing failed</string>
+    <string name="http_error_403">You don\'t have permission to perform this action</string>
     <string name="is_new_version">is latest version</string>
     <string name="version_desc">Version description</string>
     <string name="find_new_version">New version found</string>

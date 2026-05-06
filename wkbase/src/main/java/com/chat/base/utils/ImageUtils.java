@@ -22,6 +22,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.chat.base.WKBaseApplication;
 import com.chat.base.config.WKConstants;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -169,6 +170,61 @@ public class ImageUtils {
             }
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(file.getAbsolutePath())));
 
+        }
+    }
+
+    /**
+     * 与 iOS {@code WKPhotoService compressImageSize:toByte:1024*50} 对齐：正方形裁剪后压成约 50KB 以内的 JPEG 再上传。
+     */
+    public void saveAvatarForUpload(Context context, Bitmap bitmap, ISave iSave) {
+        final int maxBytes = 50 * 1024;
+        byte[] jpeg = compressAvatarJpeg(bitmap, maxBytes);
+        String fileName = "avatar_upload_" + System.currentTimeMillis() + ".jpg";
+        File file = new File(WKConstants.imageDir, fileName);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(jpeg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (iSave != null) {
+            iSave.onResult(file.getAbsolutePath());
+        }
+    }
+
+    private static byte[] compressAvatarJpeg(Bitmap source, int maxBytes) {
+        Bitmap work = source;
+        Bitmap scaled = null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            for (int round = 0; round < 6; round++) {
+                for (int q = 92; q >= 50; q -= 6) {
+                    baos.reset();
+                    work.compress(Bitmap.CompressFormat.JPEG, q, baos);
+                    if (baos.size() <= maxBytes) {
+                        return baos.toByteArray();
+                    }
+                }
+                int maxSide = Math.max(work.getWidth(), work.getHeight());
+                if (maxSide <= 220) {
+                    break;
+                }
+                float factor = 280f / maxSide;
+                int nw = Math.max(1, Math.round(work.getWidth() * factor));
+                int nh = Math.max(1, Math.round(work.getHeight() * factor));
+                Bitmap next = Bitmap.createScaledBitmap(work, nw, nh, true);
+                if (scaled != null && scaled != source) {
+                    scaled.recycle();
+                }
+                scaled = next;
+                work = next;
+            }
+            baos.reset();
+            work.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+            return baos.toByteArray();
+        } finally {
+            if (scaled != null && scaled != source) {
+                scaled.recycle();
+            }
         }
     }
 

@@ -193,6 +193,8 @@ public class MyHeadPortraitActivity extends WKBaseActivity<ActMyHeadPortraitLayo
                     String avatarURL = WKApiConfig.getAvatarUrl(WKConfig.getInstance().getUid());
                     avatarURL = avatarURL + "?key=" + channel.avatarCacheKey;
                     EndpointManager.getInstance().invoke("updateRtcAvatarUrl", avatarURL);
+                } else {
+                    showToast(com.chat.base.R.string.avatar_upload_fail);
                 }
             });
         }
