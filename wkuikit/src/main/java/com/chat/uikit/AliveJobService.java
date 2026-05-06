@@ -19,13 +19,21 @@ import com.xinbida.wukongim.WKIM;
 public class AliveJobService extends JobService {
 
     private static final String TAG = "AliveJobService";
+    private static final int JOB_ID = 8;
 
 
     public static void startJob(Context context) {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        if (jobScheduler == null) {
+            return;
+        }
+        JobInfo existing = jobScheduler.getPendingJob(JOB_ID);
+        if (existing != null) {
+            return;
+        }
         //setPersisted 在设备重启依然执行
         // 需要增加权限 RECEIVE_BOOT_COMPLETED
-        JobInfo.Builder builder = new JobInfo.Builder(8, new ComponentName(context.getPackageName(),
+        JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(context.getPackageName(),
                 AliveJobService.class.getName())).setPersisted(true);
 
         // 小于7.0
@@ -47,11 +55,6 @@ public class AliveJobService extends JobService {
         if (TextUtils.isEmpty(WKConfig.getInstance().getToken())) {
             return false;
         }
-        // 如果7.0以上 轮询
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            startJob(this);
-        }
-
         WKIM.getInstance().getConnectionManager().connection();
         WKIMUtils.getInstance().initIMListener();
         return false;

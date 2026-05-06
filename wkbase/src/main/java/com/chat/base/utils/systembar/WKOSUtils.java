@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -214,6 +215,34 @@ public class WKOSUtils {
             context.startActivity(intent);
         }
 
+    }
+
+    /**
+     * 跳转电池优化白名单相关页面（尽量直达当前应用，不行则退回系统电池优化列表/应用详情）。
+     */
+    public static void openBatteryOptimizationSettings(Context context) {
+        if (context == null) {
+            return;
+        }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+                if (pm != null && !pm.isIgnoringBatteryOptimizations(context.getPackageName())) {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + context.getPackageName()));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                    return;
+                }
+                Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                return;
+            }
+            gotoSet(context);
+        } catch (Exception e) {
+            gotoSet(context);
+        }
     }
 
     public static void openPermissionSetting(Context context,String channelID) {
