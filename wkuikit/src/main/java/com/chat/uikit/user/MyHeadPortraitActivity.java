@@ -183,7 +183,7 @@ public class MyHeadPortraitActivity extends WKBaseActivity<ActMyHeadPortraitLayo
         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
             String path = result.getData().getStringExtra("path");
             if (TextUtils.isEmpty(path)) {
-                showToast(com.chat.base.R.string.avatar_upload_fail);
+                showToast(R.string.avatar_upload_fail);
                 return;
             }
             UserModel.getInstance().uploadAvatar(path, code -> {
@@ -202,7 +202,7 @@ public class MyHeadPortraitActivity extends WKBaseActivity<ActMyHeadPortraitLayo
                     avatarURL = avatarURL + "?key=" + channel.avatarCacheKey;
                     EndpointManager.getInstance().invoke("updateRtcAvatarUrl", avatarURL);
                 } else {
-                    showToast(com.chat.base.R.string.avatar_upload_fail);
+                    showToast(R.string.avatar_upload_fail);
                 }
             });
         }

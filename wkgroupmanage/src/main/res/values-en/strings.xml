@@ -31,6 +31,7 @@
     <string name="gm_forbidden_to_minute">Lift the ban after %d minutes</string>
     <string name="group_avatar">Group header</string>
     <string name="update_avatar">Update Avatar</string>
+    <string name="avatar_upload_fail">Upload failed</string>
     <string name="no_permissions">Permission denied. Please enable it in system settings and try again.</string>
     <string name="redpacket_choose_exclusive_member">Select a member</string>
     <string name="redpacket_confirm_exclusive_member">Send the exclusive red packet to %s?</string>

@@ -183,7 +183,7 @@ public class GroupHeaderActivity extends WKBaseActivity<ActGroupHeaderLayoutBind
         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
             String path = result.getData().getStringExtra("path");
             if (TextUtils.isEmpty(path)) {
-                showToast(com.chat.base.R.string.avatar_upload_fail);
+                showToast(R.string.avatar_upload_fail);
                 return;
             }
             GroupManageModel.getInstance().uploadAvatar(groupNO, path, code -> {
@@ -199,7 +199,7 @@ public class GroupHeaderActivity extends WKBaseActivity<ActGroupHeaderLayoutBind
                     WKIM.getInstance().getChannelManager().updateAvatarCacheKey(groupNO, WKChannelType.GROUP, channel.avatarCacheKey);
                     GlideUtils.getInstance().showAvatarImg(this, channel.channelID, WKChannelType.GROUP, channel.avatarCacheKey, wkVBinding.avatarIv);
                 } else {
-                    showToast(com.chat.base.R.string.avatar_upload_fail);
+                    showToast(R.string.avatar_upload_fail);
                 }
             });
         }

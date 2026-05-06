@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.chat.base.act.WorkplaceWebViewActivity;
+import com.chat.base.act.WKWebViewActivity;
 import com.chat.base.base.WKBaseFragment;
 import com.chat.base.config.WKConfig;
 import com.chat.base.endpoint.EndpointManager;
@@ -157,7 +157,7 @@ public class WorkplaceFragment extends WKBaseFragment<FragWorkplaceLayoutBinding
         if (TextUtils.isEmpty(url)) {
             return;
         }
-        Intent intent = new Intent(getActivity(), WorkplaceWebViewActivity.class);
+        Intent intent = new Intent(getActivity(), WKWebViewActivity.class);
         intent.putExtra("url", url);
         intent.putExtra("workplace_bubble_url", url);
         intent.putExtra("workplace_bubble_icon", icon);

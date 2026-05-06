@@ -300,6 +300,7 @@
     <string name="uikit_search_for_date">Date</string>
     <string name="uikit_go_to_chat_item">Go to chat</string>
     <string name="uikit_search_for_image">Image</string>
+    <string name="avatar_upload_fail">Upload failed</string>
     <string name="no_permissions">Permission denied. Please enable it in system settings and try again.</string>
 </resources>
 
