@@ -63,34 +63,10 @@ public class WKApiConfig {
         return channelType == WKChannelType.PERSONAL ? getAvatarUrl(channelID) : getGroupUrl(channelID);
     }
 
-    /**
-     * 给头像/通用 URL 拼上 {@code ?v=<cacheKey>}，目的是<b>把头像缓存版本带进 URL 自身</b>：
-     * <ul>
-     *     <li>当对方更新头像时 server 会下发 {@code wk_userAvatarUpdate} CMD，本地把
-     *     {@code WKChannel.avatarCacheKey} 改成新 UUID。但有些 Adapter（会话列表、联系人列表、
-     *     聊天气泡）持有的是 {@code WKChannel} 的<b>旧实例引用</b>，DB 里的新 key 没同步到这个引用上；
-     *     即使 Glide 用 {@code MyGlideUrlWithId} 把 cacheKey 当作磁盘 key，旧引用还是会拿到旧 key
-     *     而命中之前缓存的「默认头像」字节，UI 上就一直是默认头像。</li>
-     *     <li>把 cache key 拼到 URL 里以后，URL 字符串本身随 key 变化，Glide 内存/磁盘缓存、
-     *     OkHttp 协议缓存都会自然失效；而服务端 {@code GET /v1/users/{uid}/avatar} 也支持
-     *     {@code ?v=}（{@code chinaim-server} 仅做透传/日志，不影响响应字节），
-     *     不会触发任何业务副作用。</li>
-     * </ul>
-     * <p>规则：</p>
-     * <ul>
-     *     <li>{@code url} / {@code cacheKey} 任一为空 → 原样返回；</li>
-     *     <li>URL 已经含 {@code v=}（query 中或 fragment 之前）→ 不重复追加，原样返回，避免覆盖
-     *     调用方自己拼好的版本号；</li>
-     *     <li>否则按是否已有 {@code ?} 选择 {@code ?v=} 或 {@code &v=}，并对 {@code cacheKey}
-     *     做 {@link Uri#encode} 防止特殊字符破坏 URL。</li>
-     * </ul>
-     */
     public static String appendAvatarCacheKey(String url, String cacheKey) {
         if (TextUtils.isEmpty(url) || TextUtils.isEmpty(cacheKey)) {
             return url;
         }
-        // 仅对 http(s) URL 追加；本地文件路径（file://、绝对路径等）原样返回，
-        // 避免给 Glide 拿到 `/storage/...avatar?v=...` 这种被当 query 处理失败的怪路径。
         String lower = url.toLowerCase(Locale.US);
         if (!lower.startsWith("http://") && !lower.startsWith("https://")) {
             return url;
@@ -99,7 +75,6 @@ public class WKApiConfig {
         if (q < 0) {
             return url + "?v=" + Uri.encode(cacheKey);
         }
-        // 已含 v=（在 query 部分中），就不再追加
         String query = url.substring(q + 1);
         if (query.startsWith("v=") || query.contains("&v=")) {
             return url;

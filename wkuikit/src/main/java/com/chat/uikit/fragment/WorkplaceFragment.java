@@ -10,8 +10,10 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.chat.base.act.WorkplaceWebViewActivity;
 import com.chat.base.base.WKBaseFragment;
+import com.chat.base.config.WKConfig;
 import com.chat.base.endpoint.EndpointManager;
 import com.chat.base.utils.singleclick.SingleClickUtil;
+import com.chat.uikit.R;
 import com.chat.uikit.databinding.FragWorkplaceLayoutBinding;
 import com.chat.uikit.workplace.WorkplaceApp;
 import com.chat.uikit.workplace.WorkplaceAppAdapter;
@@ -19,9 +21,7 @@ import com.chat.uikit.workplace.WorkplaceCategory;
 import com.chat.uikit.workplace.WorkplaceModel;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WorkplaceFragment extends WKBaseFragment<FragWorkplaceLayoutBinding> {
 
@@ -58,47 +58,54 @@ public class WorkplaceFragment extends WKBaseFragment<FragWorkplaceLayoutBinding
     private void showCategory(List<WorkplaceCategory> categories) {
         if (!isAdded() || getActivity() == null || adapter == null) return;
         if (categories == null || categories.isEmpty()) {
-            adapter.setList(new ArrayList<>());
+            adapter.setList(buildFallbackApps());
             return;
         }
-        List<WorkplaceCategory> validCategories = new ArrayList<>();
+        WorkplaceCategory firstValidCategory = null;
         for (WorkplaceCategory category : categories) {
             if (category != null && !TextUtils.isEmpty(category.category_no)) {
-                validCategories.add(category);
+                firstValidCategory = category;
+                break;
             }
         }
-        if (validCategories.isEmpty()) {
-            adapter.setList(new ArrayList<>());
+        if (firstValidCategory == null) {
+            adapter.setList(buildFallbackApps());
             return;
         }
-        loadAppsFromAllCategories(validCategories);
+        loadAppsFromCategory(firstValidCategory.category_no);
     }
 
-    private void loadAppsFromAllCategories(List<WorkplaceCategory> categories) {
-        final int total = categories.size();
-        final int[] finished = {0};
-        final Map<String, WorkplaceApp> appMap = new LinkedHashMap<>();
-        for (WorkplaceCategory category : categories) {
-            WorkplaceModel.getInstance().getAppsWithCategory(category.category_no, apps -> {
-                if (apps != null && !apps.isEmpty()) {
-                    for (WorkplaceApp app : apps) {
-                        if (app == null || TextUtils.isEmpty(app.app_id)) {
-                            continue;
-                        }
-                        if (!appMap.containsKey(app.app_id)) {
-                            appMap.put(app.app_id, app);
-                        }
-                    }
+    private void loadAppsFromCategory(String categoryNo) {
+        WorkplaceModel.getInstance().getAppsWithCategory(categoryNo, apps -> {
+            if (!isAdded() || getActivity() == null || adapter == null) return;
+            if (apps == null || apps.isEmpty()) {
+                adapter.setList(buildFallbackApps());
+                return;
+            }
+            List<WorkplaceApp> validApps = new ArrayList<>();
+            for (WorkplaceApp app : apps) {
+                if (app != null) {
+                    validApps.add(app);
                 }
-                finished[0]++;
-                if (finished[0] < total) {
-                    return;
-                }
-                List<WorkplaceApp> merged = new ArrayList<>(appMap.values());
-                if (!isAdded() || getActivity() == null || adapter == null) return;
-                adapter.setList(merged);
-            });
+            }
+            adapter.setList(validApps);
+        });
+    }
+
+    private List<WorkplaceApp> buildFallbackApps() {
+        List<WorkplaceApp> fallback = new ArrayList<>();
+        String webUrl = WKConfig.getInstance().getAppConfig().web_url;
+        if (TextUtils.isEmpty(webUrl)) {
+            return fallback;
         }
+        WorkplaceApp app = new WorkplaceApp();
+        app.name = getString(R.string.tab_text_workplace);
+        app.description = webUrl;
+        app.jump_type = 0;
+        app.status = 1;
+        app.web_route = webUrl;
+        fallback.add(app);
+        return fallback;
     }
 
     private void openApp(WorkplaceApp app) {
@@ -152,7 +159,6 @@ public class WorkplaceFragment extends WKBaseFragment<FragWorkplaceLayoutBinding
         }
         Intent intent = new Intent(getActivity(), WorkplaceWebViewActivity.class);
         intent.putExtra("url", url);
-        // Pending state for returning to Workplace page bubble.
         intent.putExtra("workplace_bubble_url", url);
         intent.putExtra("workplace_bubble_icon", icon);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

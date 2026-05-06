@@ -1,6 +1,7 @@
 package com.chat.uikit.workplace;
 
 import com.alibaba.fastjson.JSON;
+import android.util.Log;
 import com.chat.base.base.WKBaseModel;
 import com.chat.base.net.IRequestResultListener;
 
@@ -23,11 +24,13 @@ public class WorkplaceModel extends WKBaseModel {
         request(createService(WorkplaceService.class).getCategory(), new IRequestResultListener<>() {
             @Override
             public void onSuccess(List<WorkplaceCategory> result) {
+                Log.d("WorkplaceModel", "getCategory success, size=" + (result == null ? 0 : result.size()));
                 back.onResult(ensureCategoryList(result));
             }
 
             @Override
             public void onFail(int code, String msg) {
+                Log.e("WorkplaceModel", "getCategory fail, code=" + code + ", msg=" + msg);
                 back.onResult(null);
             }
         });
@@ -37,11 +40,13 @@ public class WorkplaceModel extends WKBaseModel {
         request(createService(WorkplaceService.class).getAppsWithCategory(categoryNo), new IRequestResultListener<>() {
             @Override
             public void onSuccess(List<WorkplaceApp> result) {
+                Log.d("WorkplaceModel", "getAppsWithCategory success, categoryNo=" + categoryNo + ", size=" + (result == null ? 0 : result.size()));
                 back.onResult(ensureAppList(result));
             }
 
             @Override
             public void onFail(int code, String msg) {
+                Log.e("WorkplaceModel", "getAppsWithCategory fail, categoryNo=" + categoryNo + ", code=" + code + ", msg=" + msg);
                 back.onResult(null);
             }
         });

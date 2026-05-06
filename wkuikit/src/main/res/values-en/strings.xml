@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">AI抖商学院</string>
     <string name="sync_msg">Receiving…</string>
     <string name="connecting">Connecting</string>
     <string name="not_connected">Not Connected</string>
@@ -152,9 +151,6 @@
     <string name="dark_save_tips">New settings will take effect after restarting %s</string>
 
     <string name="input_apply_remark">Input apply remark</string>
-    <string name="agree_friend_title">Accept friend request</string>
-    <string name="agree_friend_message">Optional greeting shown to the other party. Leave blank to use the default.</string>
-    <string name="agree_friend_hint">Self-introduction (optional)</string>
     <string name="source_from">Source</string>
     <string name="source_from_unknown">Unknown</string>
     <string name="user_detail_info">Profile settings</string>
@@ -304,17 +300,6 @@
     <string name="uikit_search_for_date">Date</string>
     <string name="uikit_go_to_chat_item">Go to chat</string>
     <string name="uikit_search_for_image">Image</string>
-    <string name="my_invite_code">Invitation code</string>
-    <string name="invite_enable">Enable</string>
-    <string name="invite_disable">Disable</string>
-    <string name="keep_alive_section_title">Background connection &amp; battery</string>
-    <string name="im_fgs_switch_title">Keep messaging connection in background</string>
-    <string name="im_fgs_switch_desc">When enabled, returning home shows an ongoing notification and uses a foreground service to improve IM reliability (not guaranteed; OEM policies may still apply).</string>
-    <string name="battery_opt_row_title">Battery &amp; background restrictions</string>
-    <string name="battery_opt_row_desc">If messages are delayed, open system settings for %s and disable battery optimization or allow background activity (wording varies by OEM).</string>
-    <string name="im_fgs_channel_name">Messaging connection</string>
-    <string name="im_fgs_channel_desc">Keeps instant messaging connected</string>
-    <string name="im_fgs_notification_title">Messaging service active</string>
-    <string name="im_fgs_notification_text">Staying connected to sync new messages</string>
+    <string name="no_permissions">Permission denied. Please enable it in system settings and try again.</string>
 </resources>
 

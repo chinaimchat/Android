@@ -127,26 +127,30 @@ public class MyHeadPortraitActivity extends WKBaseActivity<ActMyHeadPortraitLayo
                 public void onResult(boolean result) {
                     if (result) {
                         success();
+                    } else {
+                        showToast(R.string.no_permissions);
                     }
                 }
 
                 @Override
                 public void clickResult(boolean isCancel) {
                 }
-            }, this, desc, Manifest.permission.CAMERA);
+            }, this, desc, Manifest.permission.READ_MEDIA_IMAGES);
         } else {
             WKPermissions.getInstance().checkPermissions(new WKPermissions.IPermissionResult() {
                 @Override
                 public void onResult(boolean result) {
                     if (result) {
                         success();
+                    } else {
+                        showToast(R.string.no_permissions);
                     }
                 }
 
                 @Override
                 public void clickResult(boolean isCancel) {
                 }
-            }, this, desc, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE);
+            }, this, desc, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
 
@@ -178,6 +182,10 @@ public class MyHeadPortraitActivity extends WKBaseActivity<ActMyHeadPortraitLayo
     ActivityResultLauncher<Intent> chooseResultLac = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
             String path = result.getData().getStringExtra("path");
+            if (TextUtils.isEmpty(path)) {
+                showToast(com.chat.base.R.string.avatar_upload_fail);
+                return;
+            }
             UserModel.getInstance().uploadAvatar(path, code -> {
                 if (code == HttpResponseCode.success) {
                     WKChannel channel = WKIM.getInstance().getChannelManager().getChannel(WKConfig.getInstance().getUid(), WKChannelType.PERSONAL);

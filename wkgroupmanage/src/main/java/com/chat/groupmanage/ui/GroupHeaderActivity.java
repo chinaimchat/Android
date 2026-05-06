@@ -103,7 +103,7 @@ public class GroupHeaderActivity extends WKBaseActivity<ActGroupHeaderLayoutBind
 
     private void showBottomDialog() {
         List<PopupMenuItem> list = new ArrayList<>();
-        if (member != null && member.role != WKChannelMemberRole.normal)
+        if (member != null && member.role == WKChannelMemberRole.admin)
             list.add(new PopupMenuItem(getString(R.string.update_avatar), R.mipmap.group_edit, () -> {
                 WKBaseApplication.getInstance().disconnect = false;
                 chooseIMG();
@@ -129,32 +129,36 @@ public class GroupHeaderActivity extends WKBaseActivity<ActGroupHeaderLayoutBind
                 public void onResult(boolean result) {
                     if (result) {
                         success();
+                    } else {
+                        showToast(R.string.no_permissions);
                     }
                 }
 
                 @Override
                 public void clickResult(boolean isCancel) {
                 }
-            }, this, desc, Manifest.permission.CAMERA);
+            }, this, desc, Manifest.permission.READ_MEDIA_IMAGES);
         } else {
             WKPermissions.getInstance().checkPermissions(new WKPermissions.IPermissionResult() {
                 @Override
                 public void onResult(boolean result) {
                     if (result) {
                         success();
+                    } else {
+                        showToast(R.string.no_permissions);
                     }
                 }
 
                 @Override
                 public void clickResult(boolean isCancel) {
                 }
-            }, this, desc, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }, this, desc, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
         }
     }
 
     private void success() {
 
-        GlideUtils.getInstance().chooseIMG(GroupHeaderActivity.this, 1, true, ChooseMimeType.img, false, new GlideUtils.ISelectBack() {
+        GlideUtils.getInstance().chooseIMG(GroupHeaderActivity.this, 1, false, ChooseMimeType.img, false, new GlideUtils.ISelectBack() {
             @Override
             public void onBack(List<ChooseResult> paths) {
                 if (paths.size() > 0) {
@@ -178,9 +182,19 @@ public class GroupHeaderActivity extends WKBaseActivity<ActGroupHeaderLayoutBind
     ActivityResultLauncher<Intent> chooseResultLac = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
             String path = result.getData().getStringExtra("path");
+            if (TextUtils.isEmpty(path)) {
+                showToast(com.chat.base.R.string.avatar_upload_fail);
+                return;
+            }
             GroupManageModel.getInstance().uploadAvatar(groupNO, path, code -> {
                 if (code == HttpResponseCode.success) {
                     WKChannel channel = WKIM.getInstance().getChannelManager().getChannel(groupNO, WKChannelType.GROUP);
+                    if (channel == null || TextUtils.isEmpty(channel.channelID)) {
+                        channel = new WKChannel();
+                        channel.channelID = groupNO;
+                        channel.channelType = WKChannelType.GROUP;
+                        WKIM.getInstance().getChannelManager().saveOrUpdateChannel(channel);
+                    }
                     channel.avatarCacheKey = UUID.randomUUID().toString().replace("-", "");
                     WKIM.getInstance().getChannelManager().updateAvatarCacheKey(groupNO, WKChannelType.GROUP, channel.avatarCacheKey);
                     GlideUtils.getInstance().showAvatarImg(this, channel.channelID, WKChannelType.GROUP, channel.avatarCacheKey, wkVBinding.avatarIv);
