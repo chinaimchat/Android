@@ -75,6 +75,8 @@ public class OkHttpUtils {
                             .addInterceptor(new DomainFalloverInterceptor())
                             .addInterceptor(mRewriteCacheControlInterceptor)
                             .addInterceptor(new CommonRequestParamInterceptor())
+                            // Debug-only: dump Workplace headers + raw response body for backend triage.
+                            .addInterceptor(new WorkplaceDebugInterceptor())
                             .addNetworkInterceptor(mRewriteCacheControlInterceptor)
                             .addInterceptor(new LogInterceptor()).build();
                 }
